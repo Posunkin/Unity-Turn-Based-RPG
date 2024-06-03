@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class Unit : MonoBehaviour
 {
-    [SerializeField] private TacticalGrid _grid;
     [SerializeField] private float _moveSpeed;
+    private TacticalGrid _grid;
     private bool _isMoving;
     private List<PathNode> _path = new List<PathNode>();
 
@@ -13,6 +14,12 @@ public class Unit : MonoBehaviour
     {
         transform.position = _grid.GetGridPosition(transform.position);
         _isMoving = false;
+    }
+
+    [Inject]
+    private void Construct(TacticalGrid grid)
+    {
+        _grid = grid;
     }
 
     private void Update()

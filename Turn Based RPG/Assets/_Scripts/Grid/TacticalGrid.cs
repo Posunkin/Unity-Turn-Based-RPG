@@ -35,6 +35,7 @@ public class TacticalGrid : MonoBehaviour
             foreach (var node in _pathNodes)
             {
                 Vector2 key = node.Key;
+                if (_pathNodes[key] == null) continue;
                 if (pos == key)
                 {
                     _pathNodes[key].Activate();
@@ -90,6 +91,28 @@ public class TacticalGrid : MonoBehaviour
         float yPos = y * offsetY;
 
         return new Vector2(xPos, yPos);
+    }
+
+    public void AddNode(PathNode node)
+    {
+        Vector2 pos = node.position;
+        if (_pathNodes.ContainsKey(pos))
+        {
+            Destroy(_pathNodes[pos].gameObject);
+            _pathNodes[pos] = node;
+            for (int x = 0; x < _width; x++)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    if (_pathNodesPositions[x,y] == pos)
+                    {
+                        node.Construct(x, y);
+                    }
+                }
+            }
+            node.Deactivate();
+        }
+        _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
     }
 
     public Vector2 GetGridPosition(Vector2 worldPosition)

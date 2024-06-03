@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6925924666408774808}
   - component: {fileID: 13308591196333395}
-  - component: {fileID: 6105445510066474420}
+  - component: {fileID: 3900275819863625126}
   m_Layer: 0
   m_Name: Highlight_HardGround
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6105445510066474420
+--- !u!114 &3900275819863625126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,6 +94,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8737105896380534590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9766c3fed80394847863199955121152, type: 3}
+  m_Script: {fileID: 11500000, guid: dd85e093afe3a4bbf89cd73948ebbe82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {x: 0, y: 0}
+  gValue: 0
+  hValue: 0
+  parentNode: {fileID: 0}
+  target: 0
+  movePenalty: 0

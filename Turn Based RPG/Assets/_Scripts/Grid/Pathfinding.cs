@@ -57,7 +57,7 @@ public class Pathfinding
             {
                 if (closedList.Contains(neighbour)) continue;
 
-                float movementCost = currentNode.gValue + CalculateDistance(currentNode, neighbour);
+                float movementCost = currentNode.gValue + CalculateDistance(currentNode, neighbour) + neighbour.movePenalty;
                 if (movementCost < neighbour.gValue || !openList.Contains(neighbour))
                 {
                     neighbour.gValue = movementCost;
@@ -70,24 +70,6 @@ public class Pathfinding
                     }
                 }
             }
-            // for (int i = 0; i < neighbours.Count; i++)
-            // {
-            //     if (closedList.Contains(neighbours[i])) continue;
-
-            //     float movementCost = currentNode.gValue + CalculateDistance(currentNode, neighbours[i]);
-
-            //     if (!openList.Contains(neighbours[i]) || movementCost < neighbours[i].gValue)
-            //     {
-            //         neighbours[i].gValue = movementCost;
-            //         neighbours[i].hValue = CalculateDistance(neighbours[i], endNode);
-            //         neighbours[i].parentNode = currentNode;
-
-            //         if (!openList.Contains(neighbours[i]))
-            //         {
-            //             openList.Add(neighbours[i]);
-            //         }
-            //     }
-            // }
         }
 
         Debug.Log("Path isn't found!");
@@ -129,50 +111,35 @@ public class Pathfinding
             }
         }
 
-        // Vector2[] directions;
+        Vector2[] directions;
 
-        // if (startY % 2 == 0)
-        // {
-        //     directions = new Vector2[] {
-        //         new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
-        //         new Vector2(1, -1), new Vector2(1, 1)
-        //     };
-        // }
-        // else
-        // {
-        //     directions = new Vector2[] {
-        //         new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
-        //         new Vector2(-1, -1), new Vector2(-1, 1)
-        //     };
-        // }
-
-        // foreach (Vector2 dir in directions)
-        // {
-        //     int newX = startX + (int)dir.x;
-        //     int newY = startY + (int)dir.y;
-
-        //     if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
-        //     {
-        //         neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
-        //     }
-        // }
-
-        // return neighbours;
-
-        if (startX + 1 < _width) neighbours.Add(_pathNodes[_pathNodesPositions[startX + 1, startY]]);
-        if (startX - 1 >= 0) neighbours.Add(_pathNodes[_pathNodesPositions[startX - 1, startY]]);
-        if (startY + 1 < _height) neighbours.Add(_pathNodes[_pathNodesPositions[startX, startY + 1]]);
-        if (startY - 1 >= 0) neighbours.Add(_pathNodes[_pathNodesPositions[startX, startY - 1]]);
-
-        if (startY % 2 == 0)
+        if (startY % 2 != 0)
         {
-            if (startX - 1 >= 0 && startY + 1 < _height) neighbours.Add(_pathNodes[_pathNodesPositions[startX - 1, startY + 1]]);
-            if (startX - 1 >= 0 && startY - 1 >= 0) neighbours.Add(_pathNodes[_pathNodesPositions[startX - 1, startY - 1]]);
+            directions = new Vector2[] {
+                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
+                new Vector2(1, -1), new Vector2(1, 1)
+            };
         }
         else
         {
-            if (startX + 1 < _width && startY + 1 < _height) neighbours.Add(_pathNodes[_pathNodesPositions[startX + 1, startY + 1]]);
-            if (startX + 1 < _width && startY - 1 >= 0) neighbours.Add(_pathNodes[_pathNodesPositions[startX + 1, startY - 1]]);
+            directions = new Vector2[] {
+                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
+                new Vector2(-1, -1), new Vector2(-1, 1)
+            };
+        }
+
+        foreach (Vector2 dir in directions)
+        {
+            int newX = startX + (int)dir.x;
+            int newY = startY + (int)dir.y;
+
+            if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
+            {
+                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier)
+                {
+                    neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
+                }
+            }
         }
 
         return neighbours;
@@ -182,6 +149,8 @@ public class Pathfinding
     {
        
         // return (MathF.Abs(current.yPos - target.yPos) + Mathf.Abs(current.xPos - target.yPos) + Mathf.Abs(current.xPos + current.yPos - target.xPos - target.yPos)) / 2;
-        return Mathf.Max(Mathf.Abs(current.xPos - target.xPos), Mathf.Max(Mathf.Abs(current.yPos - target.yPos), Mathf.Abs((current.xPos + target.yPos) - (current.xPos + target.yPos))));
+        return Mathf.Max(Mathf.Abs(current.xPos - target.xPos), 
+        Mathf.Max(Mathf.Abs(current.yPos - target.yPos), 
+        Mathf.Abs((current.xPos + target.yPos) - (current.xPos + target.yPos))));
     }
 }
