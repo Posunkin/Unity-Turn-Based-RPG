@@ -6,6 +6,7 @@ using Zenject;
 public class Unit : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
+    [SerializeField] private int _movePoints;
     private TacticalGrid _grid;
     private bool _isMoving;
     private List<PathNode> _path = new List<PathNode>();
@@ -13,6 +14,7 @@ public class Unit : MonoBehaviour
     private void Start()
     {
         transform.position = _grid.GetGridPosition(transform.position);
+        _grid.FindReachableNodes(transform.position, _movePoints);
         _isMoving = false;
     }
 
@@ -42,5 +44,6 @@ public class Unit : MonoBehaviour
         }
         _isMoving = false;
         transform.position = _grid.GetGridPosition(transform.position);
+        _grid.FindReachableNodes(transform.position, _movePoints);
     }
 }

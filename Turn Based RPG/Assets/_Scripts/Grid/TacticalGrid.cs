@@ -16,6 +16,7 @@ public class TacticalGrid : MonoBehaviour
     private Dictionary<Vector2, PathNode> _pathNodes = new();
     private Vector2[,] _pathNodesPositions;
     private List<PathNode> neighbourNodes = new();
+    private List<Vector2> _reachableNodes = new List<Vector2>();
     private Pathfinding _pathfinding;
 
     private void Awake()
@@ -30,7 +31,7 @@ public class TacticalGrid : MonoBehaviour
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 pos = GetGridPosition(mousePos);
-        if (_pathNodes.ContainsKey(pos))
+        if (_reachableNodes.Contains(pos))
         {
             foreach (var node in _pathNodes)
             {
@@ -38,31 +39,17 @@ public class TacticalGrid : MonoBehaviour
                 if (_pathNodes[key] == null) continue;
                 if (pos == key)
                 {
-                    _pathNodes[key].Activate();
+                    _pathNodes[key].Target();
                 }
                 else
                 {
-                    _pathNodes[key].Deactivate();
+                    _pathNodes[key].Untarget();
                 }
             }
         }
         else
         {
             Debug.Log("Hex is out of range");
-        }
-        if (_pathNodes.ContainsKey(pos) && Input.GetMouseButtonDown(1))
-        {
-            foreach (var neighbour in neighbourNodes)
-            {
-                neighbour.target = false;
-                neighbour.Deactivate();
-            }
-            neighbourNodes = _pathfinding.GetNeighbours(pos);
-            foreach (var neighbour in neighbourNodes)
-            {
-                neighbour.Activate();
-                neighbour.target = true;
-            }
         }
     }
 
@@ -79,7 +66,7 @@ public class TacticalGrid : MonoBehaviour
                 node.Construct(x, y);
                 node.position = hexPos;
                 _pathNodesPositions[x, y] = hexPos;
-                _pathNodes[_pathNodesPositions[x,y]] = node;
+                _pathNodes[_pathNodesPositions[x, y]] = node;
                 node.Deactivate();
             }
         }
@@ -104,7 +91,7 @@ public class TacticalGrid : MonoBehaviour
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    if (_pathNodesPositions[x,y] == pos)
+                    if (_pathNodesPositions[x, y] == pos)
                     {
                         node.Construct(x, y);
                     }
@@ -119,7 +106,7 @@ public class TacticalGrid : MonoBehaviour
     {
         int y = Mathf.FloorToInt(worldPosition.y / offsetY);
         int x = Mathf.FloorToInt((worldPosition.x - (y % 2 == 0 ? 0 : offsetX * 0.5f)) / offsetX);
-       
+
         if (x >= 0 && x < _width && y >= 0 && y < _height)
         {
             return _pathNodesPositions[x, y];
@@ -134,7 +121,32 @@ public class TacticalGrid : MonoBehaviour
     {
         Vector2 start = GetGridPosition(startPos);
         Vector2 end = GetGridPosition(endPos);
-        List<PathNode> path = _pathfinding.FindPath(start, end);
-        return path;
+        if (_reachableNodes.Contains(end))
+        {
+            List<PathNode> path = _pathfinding.FindPath(start, end);
+            return path;
+        }
+        else
+        {
+            Debug.Log("Position is unreachable");
+            return null;
+        }
+    }
+
+    public void FindReachableNodes(Vector2 startPos, int movePoints)
+    {
+        foreach (var node in _reachableNodes)
+        {
+            _pathNodes[node].Deactivate();
+        }
+        _reachableNodes.Clear();
+        Vector2 start = GetGridPosition(startPos);
+        List<PathNode> nodes = _pathfinding.FindReachableNodes(start, movePoints);
+        foreach (var node in nodes)
+        {
+            _reachableNodes.Add(node.position);
+            node.Activate();
+            node.Untarget();
+        }
     }
 }

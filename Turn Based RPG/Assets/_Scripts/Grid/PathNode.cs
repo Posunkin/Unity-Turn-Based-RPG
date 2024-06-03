@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum NodeType
@@ -16,7 +17,7 @@ public class PathNode : MonoBehaviour
     public float gValue;
     public float hValue;
     public PathNode parentNode;
-    public bool target;
+    public bool reachable;
     public float fValue
     {
         get { return gValue + hValue; }
@@ -32,6 +33,7 @@ public class PathNode : MonoBehaviour
     {
         _rend = GetComponent<SpriteRenderer>();
         InitNode();
+        _rend.color.WithAlpha(80);
     }
 
     protected virtual void InitNode()
@@ -46,17 +48,26 @@ public class PathNode : MonoBehaviour
     {
         xPos = x;
         yPos = y;
-    }   
-
-    public virtual void Activate()
-    {
-        if (type == NodeType.Barrier) return;
-        _rend.color = activeColor;
     }
 
-    public virtual void Deactivate()
+    public void Target()
     {
-        if (target) return;
+        _rend.color = activeColor;
+    }   
+
+    public void Untarget()
+    {
         _rend.color = deactiveColor;
+    }
+
+    public void Activate()
+    {
+        _rend.enabled = true;
+        _rend.color = deactiveColor;
+    }
+
+    public void Deactivate()
+    {
+        _rend.enabled = false;
     }
 }

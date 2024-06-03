@@ -21,7 +21,7 @@ public class ObstacleNode : PathNode
     protected override void InitNode()
     {
         type = NodeType.Obstacle;
-        movePenalty = 2f;
+        movePenalty = 1.5f;
         activeColor = Color.white;
         deactiveColor = Color.yellow;
     }

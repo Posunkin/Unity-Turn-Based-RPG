@@ -51,7 +51,7 @@ public class Pathfinding
                 return RetracePath(startNode, endNode);
             }
 
-            List<PathNode> neighbours = GetNeighbours(currentNode.position);
+            List<PathNode> neighbours = GetNeighbours(currentNode);
 
             foreach (var neighbour in neighbours)
             {
@@ -92,9 +92,10 @@ public class Pathfinding
         return path;
     }
 
-    public List<PathNode> GetNeighbours(Vector2 position)
+    public List<PathNode> GetNeighbours(PathNode node)
     {
         List<PathNode> neighbours = new List<PathNode>();
+        Vector2 position = node.position;
         int startX = 0;
         int startY = 0;
 
@@ -152,5 +153,48 @@ public class Pathfinding
         return Mathf.Max(Mathf.Abs(current.xPos - target.xPos), 
         Mathf.Max(Mathf.Abs(current.yPos - target.yPos), 
         Mathf.Abs((current.xPos + target.yPos) - (current.xPos + target.yPos))));
+    }
+
+    public List<PathNode> FindReachableNodes(Vector2 startPos, int movePoints)
+    {
+        if (!_pathNodes.ContainsKey(startPos))
+        {
+            Debug.LogError("Start position is wrong!");
+            return null;
+        }
+
+        PathNode startNode = _pathNodes[startPos];
+        List<PathNode> reachableNodes = new List<PathNode>();
+        Queue<PathNode> openQueue = new Queue<PathNode>();
+        Dictionary<PathNode, float> visitedNodes = new Dictionary<PathNode, float>();
+
+        openQueue.Enqueue(startNode);
+        visitedNodes[startNode] = 0;
+
+        while (openQueue.Count > 0)
+        {
+            PathNode currentNode = openQueue.Dequeue();
+            float currentCost = visitedNodes[currentNode];
+
+            if (currentCost <= movePoints)
+            {
+                reachableNodes.Add(currentNode);
+
+                List<PathNode> neighbours = GetNeighbours(currentNode);
+                foreach (var neighbour in neighbours)
+                {
+                    float movementCost = neighbour.movePenalty > 0 ? (1 + neighbour.movePenalty) * 1.5f : 1 + neighbour.movePenalty;
+                    float newCost = currentCost + movementCost;
+
+                    if (!visitedNodes.ContainsKey(neighbour) || newCost < visitedNodes[neighbour])
+                    {
+                        visitedNodes[neighbour] = newCost;
+                        openQueue.Enqueue(neighbour);
+                    }
+                }
+            }
+        }
+
+        return reachableNodes;
     }
 }

@@ -24,9 +24,4 @@ public class BarrierNode : PathNode
         activeColor = Color.white;
         deactiveColor = Color.black;
     }
-
-    public override void Deactivate()
-    {
-        _rend.enabled = false;
-    }
 }
