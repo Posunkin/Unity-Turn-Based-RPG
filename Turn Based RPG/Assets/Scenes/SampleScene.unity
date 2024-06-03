@@ -169,6 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _grid: {fileID: 527032095}
+  _moveSpeed: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +337,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16b0ed795d37140bd813496ad76ceb7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 527032096}
   _groundHighlightPrefab: {fileID: 7210948931301235649, guid: 7d4fc415e926a4178b51e6faffd0093e, type: 3}
   _width: 15
   _height: 15

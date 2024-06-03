@@ -15,12 +15,15 @@ public class TacticalGrid : MonoBehaviour
 
     private Dictionary<Vector2, PathNode> _pathNodes = new();
     private Vector2[,] _pathNodesPositions;
+    private List<PathNode> neighbourNodes = new();
+    private Pathfinding _pathfinding;
 
     private void Awake()
     {
         offsetX = _hexWidth;
         offsetY = 0.375f * _hexHeight;
         InitializeGrid();
+        _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
     }
 
     private void Update()
@@ -46,6 +49,20 @@ public class TacticalGrid : MonoBehaviour
         {
             Debug.Log("Hex is out of range");
         }
+        if (_pathNodes.ContainsKey(pos) && Input.GetMouseButtonDown(1))
+        {
+            foreach (var neighbour in neighbourNodes)
+            {
+                neighbour.target = false;
+                neighbour.Deactivate();
+            }
+            neighbourNodes = _pathfinding.GetNeighbours(pos);
+            foreach (var neighbour in neighbourNodes)
+            {
+                neighbour.Activate();
+                neighbour.target = true;
+            }
+        }
     }
 
     private void InitializeGrid()
@@ -58,6 +75,7 @@ public class TacticalGrid : MonoBehaviour
                 Vector2 hexPos = CalculateHexPosition(x, y);
 
                 PathNode node = Instantiate(_groundHighlightPrefab, hexPos, Quaternion.Euler(60, 0, 0), this.transform);
+                node.Construct(x, y);
                 node.position = hexPos;
                 _pathNodesPositions[x, y] = hexPos;
                 _pathNodes[_pathNodesPositions[x,y]] = node;
@@ -85,8 +103,15 @@ public class TacticalGrid : MonoBehaviour
         }
         else
         {
-            Debug.Log("Index is out of range");
             return Vector2.zero;
         }
+    }
+
+    public List<PathNode> FindPath(Vector2 startPos, Vector2 endPos)
+    {
+        Vector2 start = GetGridPosition(startPos);
+        Vector2 end = GetGridPosition(endPos);
+        List<PathNode> path = _pathfinding.FindPath(start, end);
+        return path;
     }
 }
