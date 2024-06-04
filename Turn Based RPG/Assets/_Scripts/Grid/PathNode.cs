@@ -25,23 +25,20 @@ public class PathNode : MonoBehaviour
     public float movePenalty;
 
     protected SpriteRenderer _rend;
-    protected Color activeColor;
-    protected Color deactiveColor;
+    [SerializeField] protected Color activeColor;
+    [SerializeField] protected Color deactiveColor;
 
 
     protected void Awake()
     {
         _rend = GetComponent<SpriteRenderer>();
         InitNode();
-        _rend.color.WithAlpha(80);
     }
 
     protected virtual void InitNode()
     {
         type = NodeType.Path;
         movePenalty = 1f;
-        activeColor = Color.white;
-        deactiveColor = Color.green;
     }
 
     public void Construct(int x, int y)

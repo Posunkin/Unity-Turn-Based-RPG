@@ -15,12 +15,19 @@ public class TacticalGrid : MonoBehaviour
 
     private Dictionary<Vector2, PathNode> _pathNodes = new();
     private Vector2[,] _pathNodesPositions;
-    private List<PathNode> neighbourNodes = new();
+    private List<PathNode> _neighbourNodes = new();
+    private List<PathNode> _path = new List<PathNode>();
     private List<Vector2> _reachableNodes = new List<Vector2>();
     private Pathfinding _pathfinding;
 
+    private LineRenderer _line;
+    private bool _isWalking;
+
     private void Awake()
     {
+        _line = GetComponent<LineRenderer>();
+        _isWalking = false;
+        _line.enabled = false;
         offsetX = _hexWidth;
         offsetY = 0.375f * _hexHeight;
         InitializeGrid();
@@ -47,10 +54,10 @@ public class TacticalGrid : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            Debug.Log("Hex is out of range");
-        }
+        // else
+        // {
+        //     Debug.Log("Hex is out of range");
+        // }
     }
 
     private void InitializeGrid()
@@ -117,19 +124,39 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
-    public List<PathNode> FindPath(Vector2 startPos, Vector2 endPos)
+    public List<PathNode> GetPath(Vector2 startPos, Vector2 endPos)
     {
         Vector2 start = GetGridPosition(startPos);
         Vector2 end = GetGridPosition(endPos);
-        if (_reachableNodes.Contains(end))
+        PathNode endNode = _pathNodes[end];
+        if (_path.Contains(endNode))
         {
-            List<PathNode> path = _pathfinding.FindPath(start, end);
-            return path;
+            return _path;
         }
         else
         {
             Debug.Log("Position is unreachable");
             return null;
+        }
+    }
+
+    public void DrawPath(Vector2 startPos, Vector2 endPos)
+    {
+        Vector2 start = GetGridPosition(startPos);
+        Vector2 end = GetGridPosition(endPos);
+        if (_reachableNodes.Contains(end))
+        {
+            _path = _pathfinding.FindPath(start, end);
+        }
+        if (_path != null)
+        {
+            _line.positionCount = _path.Count + 1;
+            _line.SetPosition(0, start);
+            for (int i = 0; i < _path.Count; i++)
+            {
+                _line.SetPosition(i + 1, _path[i].position);
+            }
+            _line.enabled = true;
         }
     }
 

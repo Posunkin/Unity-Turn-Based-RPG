@@ -26,10 +26,12 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        if (_isMoving) return;
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _grid.DrawPath(transform.position, mousePos);
         if (Input.GetMouseButtonDown(0) && !_isMoving)
         {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            _path = _grid.FindPath(transform.position, mousePos);
+            _path = _grid.GetPath(transform.position, mousePos);
             if (_path != null) StartCoroutine(MoveRoutine());
         }
     }

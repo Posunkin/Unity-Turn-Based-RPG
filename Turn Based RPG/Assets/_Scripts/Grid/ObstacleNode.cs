@@ -22,7 +22,5 @@ public class ObstacleNode : PathNode
     {
         type = NodeType.Obstacle;
         movePenalty = 1.5f;
-        activeColor = Color.white;
-        deactiveColor = Color.yellow;
     }
 }

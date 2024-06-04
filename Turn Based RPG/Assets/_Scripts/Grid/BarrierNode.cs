@@ -21,7 +21,5 @@ public class BarrierNode : PathNode
     protected override void InitNode()
     {
         type = NodeType.Barrier;
-        activeColor = Color.white;
-        deactiveColor = Color.black;
     }
 }
