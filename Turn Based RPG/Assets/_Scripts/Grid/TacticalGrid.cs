@@ -8,10 +8,8 @@ public class TacticalGrid : MonoBehaviour
     [SerializeField] private int _width;
     [SerializeField] private int _height;
 
-    private float offsetX;
-    private float offsetY;
-    private float _hexWidth = 1;
-    private float _hexHeight = 1;
+    private float _offsetX = 1;
+    private float _offsetY = 0.375f;
 
     private Dictionary<Vector2, PathNode> _pathNodes = new();
     private Vector2[,] _pathNodesPositions;
@@ -21,15 +19,11 @@ public class TacticalGrid : MonoBehaviour
     private Pathfinding _pathfinding;
 
     private LineRenderer _line;
-    private bool _isWalking;
 
     private void Awake()
     {
         _line = GetComponent<LineRenderer>();
-        _isWalking = false;
         _line.enabled = false;
-        offsetX = _hexWidth;
-        offsetY = 0.375f * _hexHeight;
         InitializeGrid();
         _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
     }
@@ -54,9 +48,10 @@ public class TacticalGrid : MonoBehaviour
                 }
             }
         }
-        // else
+        // foreach (var node in _pathNodes)
         // {
-        //     Debug.Log("Hex is out of range");
+        //     Vector2 key = node.Key;
+        //     _pathNodes[key].Activate();
         // }
     }
 
@@ -81,8 +76,8 @@ public class TacticalGrid : MonoBehaviour
 
     private Vector2 CalculateHexPosition(int x, int y)
     {
-        float xPos = x * offsetX + (y % 2 == 0 ? 0 : offsetX * 0.5f);
-        float yPos = y * offsetY;
+        float xPos = x * _offsetX + (y % 2 == 0 ? 0 : _offsetX * 0.5f);
+        float yPos = y * _offsetY;
 
         return new Vector2(xPos, yPos);
     }
@@ -106,13 +101,13 @@ public class TacticalGrid : MonoBehaviour
             }
             node.Deactivate();
         }
-        _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
+        _pathfinding.Refresh(_pathNodes);
     }
 
     public Vector2 GetGridPosition(Vector2 worldPosition)
     {
-        int y = Mathf.FloorToInt(worldPosition.y / offsetY);
-        int x = Mathf.FloorToInt((worldPosition.x - (y % 2 == 0 ? 0 : offsetX * 0.5f)) / offsetX);
+        int y = Mathf.FloorToInt(worldPosition.y / _offsetY);
+        int x = Mathf.FloorToInt((worldPosition.x - (y % 2 == 0 ? 0 : _offsetX * 0.5f)) / _offsetX);
 
         if (x >= 0 && x < _width && y >= 0 && y < _height)
         {
@@ -175,5 +170,26 @@ public class TacticalGrid : MonoBehaviour
             node.Activate();
             node.Untarget();
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                Vector2 pos = CalculateHexPosition(x, y);
+                Gizmos.DrawCube(pos, Vector3.one / 4);
+            }
+        }
+    }
+
+    private Vector2 GizmosPosition(Vector2 pos)
+    {
+        _offsetX = 1;
+        _offsetY = 0.375f * 1;
+        int y = Mathf.FloorToInt(pos.y / _offsetY);
+        int x = Mathf.FloorToInt((pos.x - (y % 2 == 0 ? 0 : _offsetX * 0.5f)) / _offsetX);
+        return new Vector2(x, y);
     }
 }

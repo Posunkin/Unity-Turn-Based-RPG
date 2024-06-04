@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 
 public class Pathfinding
@@ -18,13 +15,18 @@ public class Pathfinding
         _pathNodes = pathNodes;
     }
 
+    public void Refresh(Dictionary<Vector2, PathNode> pathNodes)
+    {
+        _pathNodes = pathNodes;
+    }
+
     public List<PathNode> FindPath(Vector2 startPos, Vector2 endPos)
     {
         PathNode startNode = _pathNodes[startPos];
         PathNode endNode = _pathNodes[endPos];
 
         List<PathNode> openList = new List<PathNode>();
-        List<PathNode> closedList = new List<PathNode>();
+        HashSet<PathNode> closedList = new HashSet<PathNode>();
 
         startNode.gValue = 0;
         startNode.hValue = CalculateDistance(startNode, endNode);
