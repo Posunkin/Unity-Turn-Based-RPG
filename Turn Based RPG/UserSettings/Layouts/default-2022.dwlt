@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 953
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Hierarchy
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 17749
+  controlID: 3953
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 17750
+  controlID: 3841
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -170,7 +170,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 50}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 17751
+  controlID: 3842
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 17833
+  controlID: 3917
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -349,8 +349,8 @@ MonoBehaviour:
     y: 0
     width: 299
     height: 903
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 24}
   m_Panes:
   - {fileID: 24}
@@ -493,9 +493,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 4ab30000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: b027ffff2c30ffff6e32ffffbe34ffff269cffff1afbffff487300007a7300009c730000a2730000
+      m_ExpandedIDs: 1afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -511,7 +511,7 @@ MonoBehaviour:
         m_IsRenaming: 0
         m_OriginalEventType: 11
         m_IsRenamingFilename: 0
-        m_ClientGUIView: {fileID: 0}
+        m_ClientGUIView: {fileID: 8}
       m_SearchString: 
     m_ExpandedScenes: []
     m_CurrenRootInstanceID: 0
@@ -914,9 +914,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 6.717667, y: 2.898631, z: -0.07797762}
+    m_Target: {x: 6.3773246, y: 3.0216248, z: -0.09971788}
     speed: 2
-    m_Value: {x: 6.7580795, y: 2.7808187, z: -0.07371034}
+    m_Value: {x: 6.3773246, y: 3.0216248, z: -0.09971788}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -966,9 +966,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 4.867589
+    m_Target: 7.9657297
     speed: 2
-    m_Value: 4.440861
+    m_Value: 7.9657297
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1142,7 +1142,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/_Scripts/Combat/Character
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1150,7 +1150,7 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 54
   m_LastFolders:
-  - Assets
+  - Assets/_Scripts/Combat/Character
   m_LastFoldersGridSize: 54
   m_LastProjectPath: /Users/vlad/Documents/Unity Learning/Unity Projects/Unity-Turn-Based-RPG/Turn
     Based RPG
@@ -1158,9 +1158,9 @@ MonoBehaviour:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 51}
-    m_SelectedIDs: 38740000
-    m_LastClickedID: 29752
-    m_ExpandedIDs: 0000000038740000dc7b0000b07d000072ae00007aae000000ca9a3b
+    m_SelectedIDs: 4c770000
+    m_LastClickedID: 30540
+    m_ExpandedIDs: 0000000020750000227500002475000026750000287500000c7700002077000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1188,7 +1188,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000038740000dc7b0000b07d000072ae00007aae000000ca9a3b
+    m_ExpandedIDs: 00000000207500002275000024750000267500002875000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1215,7 +1215,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000002aa0000ee520100f0520100fa5005008a7205005068050044950500168600004e8400005e810000b8810000c2810000e8810000e08100001c8200003082000018f80000eafd00006c0201003600010042bb0000f69f0000ce9f0000aab90000dab800005ab9000090b700007eaa00009e8d0000e4c600001ac7000014c30000a20501009cfb0000d8760000e4e00000f0e00000f8e00000fa7a0000b4740000ca7400000e7b0000b67400000c790000bc740000c68200000675000014750000207500000c7500008a75000096750000de750000b2760000ec760000f6760000fe9d0000bccb000020800000d88d0000148f0000869600003ab30000f0ad00005ab30000d6b10000cea70000caa7000004a9000038a900009a830000b2a200005c0a0100c685000018860000209400009a86000012c20000e6c300009e8f00007e930000fe880000008900000a890000b283000066ae0000ac98000028a20000608b0000aea50000348b0000388b0000e2a0000042de000064990000a6170100ae9b00000000000064a00000ccb60000209d000004c40000248900002e880000c8810000d079000064a60000dab700004eb70000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -2281,7 +2281,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 29512
+  m_LastSelectedObjectID: -16404
 --- !u!114 &24
 MonoBehaviour:
   m_ObjectHideFlags: 52
