@@ -28,33 +28,6 @@ public class TacticalGrid : MonoBehaviour
         _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
     }
 
-    private void Update()
-    {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 pos = GetGridPosition(mousePos);
-        if (_reachableNodes.Contains(pos))
-        {
-            foreach (var node in _pathNodes)
-            {
-                Vector2 key = node.Key;
-                if (_pathNodes[key] == null) continue;
-                if (pos == key)
-                {
-                    _pathNodes[key].Target();
-                }
-                else
-                {
-                    _pathNodes[key].Untarget();
-                }
-            }
-        }
-        // foreach (var node in _pathNodes)
-        // {
-        //     Vector2 key = node.Key;
-        //     _pathNodes[key].Activate();
-        // }
-    }
-
     private void InitializeGrid()
     {
         _pathNodesPositions = new Vector2[_width, _height];
@@ -139,10 +112,17 @@ public class TacticalGrid : MonoBehaviour
     {
         Vector2 start = GetGridPosition(startPos);
         Vector2 end = GetGridPosition(endPos);
-        if (_reachableNodes.Contains(end))
+        if (!_reachableNodes.Contains(end)) 
         {
-            _path = _pathfinding.FindPath(start, end);
+            _line.enabled = false;
+            return;
         }
+        foreach (var node in _reachableNodes)
+        {
+            if (node == end || node == start) _pathNodes[node].Target();
+            else _pathNodes[node].Untarget();
+        }
+        _path = _pathfinding.FindPath(start, end);
         if (_path != null)
         {
             _line.positionCount = _path.Count + 1;
@@ -152,6 +132,17 @@ public class TacticalGrid : MonoBehaviour
                 _line.SetPosition(i + 1, _path[i].position);
             }
             _line.enabled = true;
+        }
+    }
+
+    public void Clear(Vector2 pos)
+    {
+        Vector2 gridPos = GetGridPosition(pos);
+        _pathNodes[gridPos].Deactivate();
+        _line.enabled = false;
+        foreach (var node in _reachableNodes)
+        {
+            _pathNodes[node].Deactivate();
         }
     }
 

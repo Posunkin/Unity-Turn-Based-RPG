@@ -1,24 +1,21 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CombatController : MonoBehaviour
 {
+    [Header("UI Elements")]
+    [SerializeField] private Button _endTurnButton;
+
     private Queue<Character> _turnQueue = new Queue<Character>();
     private List<Character> _characters = new List<Character>();
     private Character _selectedCharacter;
     private Coroutine _characterRoutine;
 
-    private void OnDisable()
-    {
-        foreach (Character character in _characters)
-        {
-            character.OnActionEnd -= EndTurn;
-        }
-    }
-
     private IEnumerator Start()
     {
+        _endTurnButton.onClick.AddListener(EndTurn);
         yield return new WaitForSeconds(1f);
         InitializeQueue();
         StartTurn();
@@ -42,11 +39,11 @@ public class CombatController : MonoBehaviour
 
     public void AddCharacter(Character character)
     {
-        character.OnActionEnd += EndTurn;
         _characters.Add(character);
     }
     #endregion
 
+    #region Turn Flow
     private void StartTurn()
     {
         if (_turnQueue.Count > 0)
@@ -61,6 +58,7 @@ public class CombatController : MonoBehaviour
 
     private void EndTurn()
     {
+        _selectedCharacter.EndTurn();
         StartTurn();
     }
 
@@ -72,6 +70,7 @@ public class CombatController : MonoBehaviour
         }
         StartTurn();
     }
+    #endregion
 
     #region Debuging
     private void PrintQueue()
