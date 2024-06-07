@@ -29,7 +29,7 @@ public class Character : MonoBehaviour
     }
 
     [Inject]
-    private void Construct(TacticalGrid grid, CombatController controller)
+    private void Dependencies(TacticalGrid grid, CombatController controller)
     {
         _grid = grid;
         _combatController = controller;
@@ -71,8 +71,12 @@ public class Character : MonoBehaviour
         for (int i = 0; i < _path.Count; i++)
         {
             _movePoints -= (int)(3 * _path[i].movePenalty);
+            while (Vector2.Distance(_grid.GetGridPosition(transform.position), _path[i].position) > 0.1f)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _path[i].position, _moveSpeed * Time.deltaTime);
+                yield return null;
+            }
             transform.position = _path[i].position;
-            yield return new WaitForSeconds(0.5f);
         }
         _isMoving = false;
         transform.position = _grid.GetGridPosition(transform.position);

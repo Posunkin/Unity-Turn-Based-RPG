@@ -6,7 +6,7 @@ public class BarrierNode : PathNode
     private TacticalGrid _grid;
 
     [Inject]
-    private void Construct(TacticalGrid grid)
+    private void Dependencies(TacticalGrid grid)
     {
         _grid = grid;
     }
