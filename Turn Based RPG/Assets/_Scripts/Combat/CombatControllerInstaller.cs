@@ -7,6 +7,6 @@ public class CombatControllerInstaller : MonoInstaller
     
     public override void InstallBindings()
     {
-        Container.Bind<CombatController>().FromInstance(_combatController).AsSingle().NonLazy();
+        Container.Bind<CombatController>().FromInstance(_combatController).AsSingle();
     }
 }

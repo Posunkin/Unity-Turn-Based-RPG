@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using Zenject;
 using UnityEngine.UI;
 
 public class CombatController : MonoBehaviour
 {
     [Header("UI Elements")]
+    [SerializeField] private CombatUI _combatUI;
     [SerializeField] private Button _endTurnButton;
 
     private Queue<Character> _turnQueue = new Queue<Character>();
@@ -13,11 +15,18 @@ public class CombatController : MonoBehaviour
     private Character _selectedCharacter;
     private Coroutine _characterRoutine;
 
+    [Inject]
+    private void Dependencies(CombatUI combatUI)
+    {
+        _combatUI = combatUI;
+    }
+
     private IEnumerator Start()
     {
-        _endTurnButton.onClick.AddListener(EndTurn);
         yield return new WaitForSeconds(1f);
         InitializeQueue();
+        _combatUI.InitUI(_turnQueue);
+        _endTurnButton.onClick.AddListener(EndTurn);
         StartTurn();
     }
 
@@ -56,7 +65,7 @@ public class CombatController : MonoBehaviour
             NextTurn();
     }
 
-    private void EndTurn()
+    public void EndTurn()
     {
         _selectedCharacter.EndTurn();
         StartTurn();
