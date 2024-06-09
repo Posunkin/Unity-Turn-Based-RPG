@@ -9,7 +9,7 @@ public enum CharacterFraction
     Enemy
 }
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, IGridObject
 {
     public CharacterStats characterStats { get; private set; }
     public string characterName { get => _characterName; }
@@ -31,6 +31,7 @@ public class Character : MonoBehaviour
     private CombatController _combatController;
 
     private int _movePoints;
+    private Coroutine _moveRoutine;
     private bool _isMoving;
     private bool _selected;
     private List<PathNode> _path = new List<PathNode>();
@@ -40,6 +41,7 @@ public class Character : MonoBehaviour
         characterStats = new CharacterStats(_startMovePoints, _initiative);
         _combatController.AddCharacter(this);
         transform.position = _grid.GetGridPosition(transform.position);
+        _grid.SetGridObject(transform.position, this);
         _isMoving = false;
         _selected = false;
     }
@@ -65,8 +67,9 @@ public class Character : MonoBehaviour
                 _grid.DrawPath(transform.position, mousePos);
                 if (Input.GetMouseButtonDown(0) && !_isMoving)
                 {
+                    if (_moveRoutine != null) StopCoroutine(_moveRoutine);
                     _path = _grid.GetPath(transform.position, mousePos);
-                    if (_path != null) StartCoroutine(MoveRoutine());
+                    if (_path != null) _moveRoutine = StartCoroutine(MoveRoutine());
                 }
             }
             else if (!_isMoving)
@@ -84,18 +87,23 @@ public class Character : MonoBehaviour
     private IEnumerator MoveRoutine()
     {
         _isMoving = true;
+        Vector2 startPos = transform.position;
         for (int i = 0; i < _path.Count; i++)
         {
             _movePoints -= (int)(3 * _path[i].movePenalty);
-            while (Vector2.Distance(_grid.GetGridPosition(transform.position), _path[i].position) > 0.1f)
+            while (Vector2.Distance(transform.position, _path[i].position) > 0.01f)
             {
                 transform.position = Vector2.MoveTowards(transform.position, _path[i].position, _moveSpeed * Time.deltaTime);
                 yield return null;
             }
             transform.position = _path[i].position;
+            // yield return null;
         }
         _isMoving = false;
         transform.position = _grid.GetGridPosition(transform.position);
+        Vector2 endPos = transform.position;
+        _grid.SetGridObject(startPos, endPos, this);
         _grid.FindReachableNodes(transform.position, _movePoints);
+        _path.Clear();
     }
 }

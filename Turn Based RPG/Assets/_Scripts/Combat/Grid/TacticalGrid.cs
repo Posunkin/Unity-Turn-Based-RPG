@@ -163,6 +163,27 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
+    public void SetGridObject(Vector2 startPos, Vector2 endPos, IGridObject obj)
+    {
+        Vector2 nodeStartPos = GetGridPosition(startPos);
+        Vector2 nodeEndPos = GetGridPosition(endPos);
+        _pathNodes[nodeStartPos].gridObject = null;
+        _pathNodes[nodeEndPos].gridObject = obj;
+    }
+
+    public void SetGridObject(Vector2 pos, IGridObject obj)
+    {
+        Vector2 nodePos = GetGridPosition(pos);
+        _pathNodes[nodePos].gridObject = obj;
+    }
+
+    public IGridObject GetGridObject(Vector2 pos)
+    {
+        Vector2 nodePos = GetGridPosition(pos);
+        IGridObject obj = _pathNodes[nodePos].gridObject;
+        return obj;
+    }
+
     private void OnDrawGizmos()
     {
         for (int x = 0; x < _width; x++)

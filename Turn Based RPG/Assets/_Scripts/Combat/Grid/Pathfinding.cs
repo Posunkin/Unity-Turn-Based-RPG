@@ -138,7 +138,7 @@ public class Pathfinding
 
             if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
             {
-                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier)
+                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier && _pathNodes[_pathNodesPositions[newX, newY]].gridObject == null)
                 {
                     neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
                 }

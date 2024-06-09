@@ -1,12 +1,5 @@
 using UnityEngine;
 
-public enum NodeType
-{
-    Path,
-    Obstacle,
-    Barrier
-}
-
 public class PathNode : MonoBehaviour
 {
     public int xPos { get; protected set; }
@@ -16,12 +9,12 @@ public class PathNode : MonoBehaviour
     public float gValue;
     public float hValue;
     public PathNode parentNode;
-    public bool reachable;
     public float fValue
     {
         get { return gValue + hValue; }
     }
-    public float movePenalty;
+    public float movePenalty { get; protected set;}
+    public IGridObject gridObject;
 
     protected SpriteRenderer _rend;
     [SerializeField] protected Color activeColor;
