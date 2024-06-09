@@ -16,6 +16,7 @@ public class TacticalGrid : MonoBehaviour
     private List<PathNode> _neighbourNodes = new();
     private List<PathNode> _path = new List<PathNode>();
     private List<Vector2> _reachableNodes = new List<Vector2>();
+    private List<PathNode> _targetNodes = new List<PathNode>();
     private Pathfinding _pathfinding;
 
     private LineRenderer _line;
@@ -144,22 +145,38 @@ public class TacticalGrid : MonoBehaviour
         {
             _pathNodes[node].Deactivate();
         }
+        foreach (var node in _targetNodes)
+        {
+            node.Deactivate();
+        }
     }
 
     public void FindReachableNodes(Vector2 startPos, int movePoints)
     {
+        IGridObject obj = _pathNodes[startPos].gridObject;
         foreach (var node in _reachableNodes)
         {
             _pathNodes[node].Deactivate();
         }
+        foreach (var node in _targetNodes)
+        {
+            node.Deactivate();
+        }
         _reachableNodes.Clear();
+        _targetNodes.Clear();
         Vector2 start = GetGridPosition(startPos);
         List<PathNode> nodes = _pathfinding.FindReachableNodes(start, movePoints);
+        _targetNodes = _pathfinding.GetTargetNodes(nodes, obj.GetFraction());
         foreach (var node in nodes)
         {
             _reachableNodes.Add(node.position);
             node.Activate();
             node.Untarget();
+        }
+        foreach(var node in _targetNodes)
+        {
+            node.Activate();
+            node.AttackTarget();
         }
     }
 

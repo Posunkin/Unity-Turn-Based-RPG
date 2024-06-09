@@ -19,6 +19,7 @@ public class PathNode : MonoBehaviour
     protected SpriteRenderer _rend;
     [SerializeField] protected Color activeColor;
     [SerializeField] protected Color deactiveColor;
+    [SerializeField] protected Color attackColor;
 
 
     protected void Awake()
@@ -42,6 +43,11 @@ public class PathNode : MonoBehaviour
     public void Target()
     {
         _rend.color = activeColor;
+    }
+
+    public void AttackTarget()
+    {
+        _rend.color = attackColor;
     }   
 
     public void Untarget()

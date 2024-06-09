@@ -106,4 +106,9 @@ public class Character : MonoBehaviour, IGridObject
         _grid.FindReachableNodes(transform.position, _movePoints);
         _path.Clear();
     }
+
+    public CharacterFraction GetFraction()
+    {
+        return _fraction;
+    }
 }

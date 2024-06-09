@@ -157,6 +157,78 @@ public class Pathfinding
         Mathf.Abs((current.xPos + target.yPos) - (current.xPos + target.yPos))));
     }
 
+    public List<PathNode> GetTargetNodes(List<PathNode> nodes, CharacterFraction fraction)
+    {
+        List<PathNode> targetNodes = new List<PathNode>();
+        foreach (PathNode node in nodes)
+        {
+            List<PathNode> t = GetTargetNeighbours(node, fraction);
+            foreach (PathNode neighbour in t)
+            {
+                targetNodes.Add(neighbour);
+            }
+        }
+        return targetNodes;
+    }
+
+    public List<PathNode> GetTargetNeighbours(PathNode node, CharacterFraction fraction)
+    {
+        List<PathNode> neighbours = new List<PathNode>();
+        Vector2 position = node.position;
+        int startX = 0;
+        int startY = 0;
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                if (_pathNodesPositions[x, y] == position)
+                {
+                    startX = x;
+                    startY = y;
+                    break;
+                }
+            }
+        }
+
+        Vector2[] directions;
+
+        if (startY % 2 != 0)
+        {
+            directions = new Vector2[] {
+                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
+                new Vector2(1, -1), new Vector2(1, 1)
+            };
+        }
+        else
+        {
+            directions = new Vector2[] {
+                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
+                new Vector2(-1, -1), new Vector2(-1, 1)
+            };
+        }
+
+        foreach (Vector2 dir in directions)
+        {
+            int newX = startX + (int)dir.x;
+            int newY = startY + (int)dir.y;
+
+            if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
+            {
+                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier && _pathNodes[_pathNodesPositions[newX, newY]].gridObject != null)
+                {
+                    CharacterFraction frac = _pathNodes[_pathNodesPositions[newX, newY]].gridObject.GetFraction();
+                    if (frac != fraction)
+                    {
+                        neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
+                    }
+                }
+            }
+        }
+
+        return neighbours;
+    }
+
     public List<PathNode> FindReachableNodes(Vector2 startPos, int movePoints)
     {
         if (!_pathNodes.ContainsKey(startPos))
