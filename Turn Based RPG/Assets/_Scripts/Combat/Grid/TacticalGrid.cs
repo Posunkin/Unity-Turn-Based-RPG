@@ -13,11 +13,12 @@ public class TacticalGrid : MonoBehaviour
 
     private Dictionary<Vector2, PathNode> _pathNodes = new();
     private Vector2[,] _pathNodesPositions;
-    private List<PathNode> _neighbourNodes = new();
     private List<PathNode> _path = new List<PathNode>();
-    private List<Vector2> _reachableNodes = new List<Vector2>();
-    private List<PathNode> _targetNodes = new List<PathNode>();
+    private List<PathNode> _reachableNodes = new List<PathNode>();
+    private List<PathNode> _walkableNodes = new List<PathNode>();
+    private PathNode _highlightNode;
     private Pathfinding _pathfinding;
+    private bool _pathToTarget = false;
 
     private LineRenderer _line;
 
@@ -93,12 +94,10 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
-    public List<PathNode> GetPath(Vector2 startPos, Vector2 endPos)
+    public List<PathNode> GetPath(Vector2 endPos)
     {
-        Vector2 start = GetGridPosition(startPos);
-        Vector2 end = GetGridPosition(endPos);
-        PathNode endNode = _pathNodes[end];
-        if (_path.Contains(endNode))
+        PathNode endNode = _pathNodes[GetGridPosition(endPos)];
+        if (_path != null && (_reachableNodes.Contains(endNode) || _walkableNodes.Contains(endNode)))
         {
             return _path;
         }
@@ -113,17 +112,29 @@ public class TacticalGrid : MonoBehaviour
     {
         Vector2 start = GetGridPosition(startPos);
         Vector2 end = GetGridPosition(endPos);
-        if (!_reachableNodes.Contains(end)) 
+        PathNode startNode = _pathNodes[start];
+        PathNode endNode = _pathNodes[end];
+        if (!_reachableNodes.Contains(endNode) && !_walkableNodes.Contains(endNode)) 
         {
             _line.enabled = false;
+            if (_highlightNode != null) _highlightNode.Untarget();
             return;
         }
-        foreach (var node in _reachableNodes)
+        startNode.Target();
+        endNode.Target();
+        foreach (var node in _walkableNodes)
         {
-            if (node == end || node == start) _pathNodes[node].Target();
-            else _pathNodes[node].Untarget();
+            node.Untarget();
         }
-        _path = _pathfinding.FindPath(start, end);
+        if (endNode.gridObject != null)
+        {
+            _path = _pathfinding.FindPathToTarget(start, end);
+            if (_path != null && _path.Count > 0) _path.RemoveAt(_path.Count - 1);
+        }
+        else
+        {
+            _path = _pathfinding.FindPath(start, end);
+        }
         if (_path != null)
         {
             _line.positionCount = _path.Count + 1;
@@ -143,9 +154,9 @@ public class TacticalGrid : MonoBehaviour
         _line.enabled = false;
         foreach (var node in _reachableNodes)
         {
-            _pathNodes[node].Deactivate();
+            node.Deactivate();
         }
-        foreach (var node in _targetNodes)
+        foreach (var node in _walkableNodes)
         {
             node.Deactivate();
         }
@@ -153,52 +164,104 @@ public class TacticalGrid : MonoBehaviour
 
     public void FindReachableNodes(Vector2 startPos, int movePoints)
     {
-        IGridObject obj = _pathNodes[startPos].gridObject;
+        CharacterFraction fraction = _pathNodes[startPos].gridObject.GetComponent<Character>().fraction;
         foreach (var node in _reachableNodes)
         {
-            _pathNodes[node].Deactivate();
+            node.Deactivate();
         }
-        foreach (var node in _targetNodes)
+        foreach (var node in _walkableNodes)
         {
             node.Deactivate();
         }
         _reachableNodes.Clear();
-        _targetNodes.Clear();
+        _walkableNodes.Clear();
         Vector2 start = GetGridPosition(startPos);
+        PathNode current = _pathNodes[start];
+        current.Activate();
+        current.Target();
         List<PathNode> nodes = _pathfinding.FindReachableNodes(start, movePoints);
-        _targetNodes = _pathfinding.GetTargetNodes(nodes, obj.GetFraction());
         foreach (var node in nodes)
         {
-            _reachableNodes.Add(node.position);
-            node.Activate();
-            node.Untarget();
-        }
-        foreach(var node in _targetNodes)
-        {
-            node.Activate();
-            node.AttackTarget();
+            if (node.gridObject != null)
+            {
+                _reachableNodes.Add(node);
+                node.Activate();
+                node.Target();
+            }
+            else
+            {
+                _walkableNodes.Add(node);
+                node.Activate();
+                node.Untarget();
+            }
         }
     }
 
-    public void SetGridObject(Vector2 startPos, Vector2 endPos, IGridObject obj)
+    public void FindTargetNodes(Vector2 pos)
+    {
+        Vector2 nodePos = GetGridPosition(pos);
+        CharacterFraction fraction = _pathNodes[nodePos].gridObject.GetComponent<Character>().fraction;
+        PathNode node = _pathNodes[nodePos];
+        _reachableNodes = _pathfinding.GetNeighbours(node);
+        foreach (var n in _reachableNodes)
+        {
+            if (n.gridObject == null)
+            {
+                n.Deactivate();
+            }
+            else
+            {
+                n.Activate();
+                n.Target();
+            }
+        }
+    }
+
+    public int CalculateDistance(Vector2 a, Vector2 b)
+    {
+        Vector2 nodeA = GetGridPosition(a);
+        Vector2 nodeB = GetGridPosition(b);
+        List<PathNode> _distance = _pathfinding.FindPath(nodeA, nodeB);
+        if (_distance != null) return _distance.Count;
+        else return int.MaxValue;
+    }
+
+    public int CalculateDistanceToTarget(Vector2 a, Vector2 b)
+    {
+        Vector2 nodeA = GetGridPosition(a);
+        Vector2 nodeB = GetGridPosition(b);
+        List<PathNode> _distance = _pathfinding.FindPathToTarget(nodeA, nodeB);
+        if (_distance != null) return _distance.Count;
+        else return int.MaxValue;
+    }
+
+    public void SetGridObject(Vector2 startPos, Vector2 endPos, GridObject obj)
     {
         Vector2 nodeStartPos = GetGridPosition(startPos);
         Vector2 nodeEndPos = GetGridPosition(endPos);
         _pathNodes[nodeStartPos].gridObject = null;
+        _pathNodes[nodeStartPos].Deactivate();
         _pathNodes[nodeEndPos].gridObject = obj;
     }
 
-    public void SetGridObject(Vector2 pos, IGridObject obj)
+    public void SetGridObject(Vector2 pos, GridObject obj)
     {
         Vector2 nodePos = GetGridPosition(pos);
         _pathNodes[nodePos].gridObject = obj;
     }
 
-    public IGridObject GetGridObject(Vector2 pos)
+    public GridObject GetGridObject(Vector2 pos)
     {
         Vector2 nodePos = GetGridPosition(pos);
-        IGridObject obj = _pathNodes[nodePos].gridObject;
-        return obj;
+        if (_pathNodes.ContainsKey(nodePos) && _pathNodes[nodePos].gridObject != null)
+        {
+            GridObject obj = _pathNodes[nodePos].gridObject;
+            return obj;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private void OnDrawGizmos()

@@ -57,7 +57,7 @@ public class Pathfinding
 
             foreach (var neighbour in neighbours)
             {
-                if (closedList.Contains(neighbour)) continue;
+                if (closedList.Contains(neighbour) || neighbour.gridObject != null) continue;
 
                 float movementCost = currentNode.gValue + CalculateDistance(currentNode, neighbour) + neighbour.movePenalty;
                 if (movementCost < neighbour.gValue || !openList.Contains(neighbour))
@@ -73,8 +73,63 @@ public class Pathfinding
                 }
             }
         }
+        return null;
+    }
 
-        Debug.Log("Path isn't found!");
+    public List<PathNode> FindPathToTarget(Vector2 startPos, Vector2 endPos)
+    {
+        PathNode startNode = _pathNodes[startPos];
+        PathNode endNode = _pathNodes[endPos];
+
+        List<PathNode> openList = new List<PathNode>();
+        HashSet<PathNode> closedList = new HashSet<PathNode>();
+
+        startNode.gValue = 0;
+        startNode.hValue = CalculateDistance(startNode, endNode);
+
+        openList.Add(startNode);
+
+        while (openList.Count > 0)
+        {
+            PathNode currentNode = openList[0];
+
+            for (int i = 0; i < openList.Count; i++)
+            {
+                if (currentNode.fValue > openList[i].fValue || (currentNode.fValue == openList[i].fValue && currentNode.hValue > openList[i].hValue))
+                {
+                    currentNode = openList[i];
+                }
+            }
+
+            openList.Remove(currentNode);
+            closedList.Add(currentNode);
+
+            if (currentNode == endNode)
+            {
+                return RetracePath(startNode, endNode);
+            }
+
+            List<PathNode> neighbours = GetNeighbours(currentNode);
+
+            foreach (var neighbour in neighbours)
+            {
+                if (closedList.Contains(neighbour)) continue;
+                if (neighbour.gridObject != null && neighbour != endNode) continue;
+
+                float movementCost = currentNode.gValue + CalculateDistance(currentNode, neighbour) + neighbour.movePenalty;
+                if (movementCost < neighbour.gValue || !openList.Contains(neighbour))
+                {
+                    neighbour.gValue = movementCost;
+                    neighbour.hValue = CalculateDistance(neighbour, endNode);
+                    neighbour.parentNode = currentNode;
+
+                    if (!openList.Contains(neighbour))
+                    {
+                        openList.Add(neighbour);
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -138,7 +193,7 @@ public class Pathfinding
 
             if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
             {
-                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier && _pathNodes[_pathNodesPositions[newX, newY]].gridObject == null)
+                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier)
                 {
                     neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
                 }
@@ -150,83 +205,9 @@ public class Pathfinding
 
     private float CalculateDistance(PathNode current, PathNode target)
     {
-       
-        // return (MathF.Abs(current.yPos - target.yPos) + Mathf.Abs(current.xPos - target.yPos) + Mathf.Abs(current.xPos + current.yPos - target.xPos - target.yPos)) / 2;
         return Mathf.Max(Mathf.Abs(current.xPos - target.xPos), 
         Mathf.Max(Mathf.Abs(current.yPos - target.yPos), 
         Mathf.Abs((current.xPos + target.yPos) - (current.xPos + target.yPos))));
-    }
-
-    public List<PathNode> GetTargetNodes(List<PathNode> nodes, CharacterFraction fraction)
-    {
-        List<PathNode> targetNodes = new List<PathNode>();
-        foreach (PathNode node in nodes)
-        {
-            List<PathNode> t = GetTargetNeighbours(node, fraction);
-            foreach (PathNode neighbour in t)
-            {
-                targetNodes.Add(neighbour);
-            }
-        }
-        return targetNodes;
-    }
-
-    public List<PathNode> GetTargetNeighbours(PathNode node, CharacterFraction fraction)
-    {
-        List<PathNode> neighbours = new List<PathNode>();
-        Vector2 position = node.position;
-        int startX = 0;
-        int startY = 0;
-
-        for (int x = 0; x < _width; x++)
-        {
-            for (int y = 0; y < _height; y++)
-            {
-                if (_pathNodesPositions[x, y] == position)
-                {
-                    startX = x;
-                    startY = y;
-                    break;
-                }
-            }
-        }
-
-        Vector2[] directions;
-
-        if (startY % 2 != 0)
-        {
-            directions = new Vector2[] {
-                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
-                new Vector2(1, -1), new Vector2(1, 1)
-            };
-        }
-        else
-        {
-            directions = new Vector2[] {
-                new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1),
-                new Vector2(-1, -1), new Vector2(-1, 1)
-            };
-        }
-
-        foreach (Vector2 dir in directions)
-        {
-            int newX = startX + (int)dir.x;
-            int newY = startY + (int)dir.y;
-
-            if (newX >= 0 && newX < _width && newY >= 0 && newY < _height)
-            {
-                if (_pathNodes[_pathNodesPositions[newX, newY]].type != NodeType.Barrier && _pathNodes[_pathNodesPositions[newX, newY]].gridObject != null)
-                {
-                    CharacterFraction frac = _pathNodes[_pathNodesPositions[newX, newY]].gridObject.GetFraction();
-                    if (frac != fraction)
-                    {
-                        neighbours.Add(_pathNodes[_pathNodesPositions[newX, newY]]);
-                    }
-                }
-            }
-        }
-
-        return neighbours;
     }
 
     public List<PathNode> FindReachableNodes(Vector2 startPos, int movePoints)

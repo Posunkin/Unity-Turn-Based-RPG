@@ -62,7 +62,7 @@ public class CombatController : MonoBehaviour
             _characterRoutine = StartCoroutine(_selectedCharacter.StartTurn());
         }
         else 
-            NextTurn();
+            NextRound();
     }
 
     public void EndTurn()
@@ -71,7 +71,7 @@ public class CombatController : MonoBehaviour
         StartTurn();
     }
 
-    private void NextTurn()
+    private void NextRound()
     {
         for (int i = 0; i <_characters.Count; i++)
         {

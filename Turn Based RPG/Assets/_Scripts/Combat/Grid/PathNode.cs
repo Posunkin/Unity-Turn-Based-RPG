@@ -14,7 +14,7 @@ public class PathNode : MonoBehaviour
         get { return gValue + hValue; }
     }
     public float movePenalty { get; protected set;}
-    public IGridObject gridObject;
+    public GridObject gridObject;
 
     protected SpriteRenderer _rend;
     [SerializeField] protected Color activeColor;
