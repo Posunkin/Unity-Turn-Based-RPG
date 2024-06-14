@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class CharacterHealth
 {
+    public Action<int> OnHealthChanged;
+    public int maxHealth { get => _maxHealth; }
     private CharacterStats _stats;
     private int _maxHealth;
     private int _currentHealth;
@@ -17,6 +20,7 @@ public class CharacterHealth
     {
         Debug.Log("Taking " + health + " damage! My health is " + _currentHealth);
         if (health > 0) _currentHealth -= health;
+        OnHealthChanged?.Invoke(_currentHealth);
         if (_currentHealth <= 0)
         {
             Debug.Log("I died!");

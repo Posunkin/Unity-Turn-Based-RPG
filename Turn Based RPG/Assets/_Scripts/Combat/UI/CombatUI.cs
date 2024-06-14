@@ -6,6 +6,8 @@ public class CombatUI : MonoBehaviour
 {
     [SerializeField] private Button _endTurnButton;
     [SerializeField] private CharacterInitiative _characterInitiativePrefab;
+    [SerializeField] private Healthbar _healthbarPrefab;
+    [SerializeField] private Transform _healthbars;
     [SerializeField] private Transform _initiativeLine;
     public Button endTurnButton { get; }
 
@@ -21,8 +23,11 @@ public class CombatUI : MonoBehaviour
         foreach (Character character in characters)
         {
             CharacterInitiative charInit = Instantiate(_characterInitiativePrefab, _initiativeLine);
+            Healthbar healthbar = Instantiate(_healthbarPrefab, _healthbars);
+            healthbar.Init(character.characterHealth, character.characterName);
             charInit.Set(character.portrait, character.characterName, character.fraction);
             _characterInitiatives[_index] = charInit;
+            character.GetComponent<GridObject>().Construct(charInit, healthbar);
             _index++;
         }
         _index = 0;

@@ -121,7 +121,6 @@ public class TacticalGrid : MonoBehaviour
             return;
         }
         startNode.Target();
-        endNode.Target();
         foreach (var node in _walkableNodes)
         {
             node.Untarget();
@@ -135,8 +134,15 @@ public class TacticalGrid : MonoBehaviour
         {
             _path = _pathfinding.FindPath(start, end);
         }
+        
         if (_path != null)
         {
+            if (_path.Count > 0) 
+            {
+                int index = _path.Count - 1;
+                _highlightNode = _path[index];
+                _highlightNode.Target();
+            }
             _line.positionCount = _path.Count + 1;
             _line.SetPosition(0, start);
             for (int i = 0; i < _path.Count; i++)

@@ -378,6 +378,7 @@ MonoBehaviour:
   _startMovePoints: 9
   _initiative: 10
   _fraction: 0
+  _attackRange: 8
   _characterName: Zana
   _portrait: {fileID: 21300000, guid: 3554ef6b3627545ddb071ae5d9abe498, type: 3}
 --- !u!4 &60147212
@@ -604,10 +605,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 2
   _strenght: 15
-  _endurance: 10
+  _endurance: 15
   _startMovePoints: 15
   _initiative: 20
   _fraction: 0
+  _attackRange: 1
   _characterName: John
   _portrait: {fileID: 21300000, guid: d1038bf1b4331443c9ac0b94294b7580, type: 3}
 --- !u!114 &136949472
@@ -1741,10 +1743,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 2
   _strenght: 12
-  _endurance: 10
+  _endurance: 12
   _startMovePoints: 12
   _initiative: 15
   _fraction: 0
+  _attackRange: 2
   _characterName: Alice
   _portrait: {fileID: 21300000, guid: a11e4aa705cc14affa4a93c9442fa9d7, type: 3}
 --- !u!4 &612252134
@@ -16661,6 +16664,7 @@ MonoBehaviour:
   _startMovePoints: 15
   _initiative: 23
   _fraction: 1
+  _attackRange: 1
   _characterName: Bandit
   _portrait: {fileID: 21300000, guid: a86fc9c7f534644cca2e9ca229dd1788, type: 3}
 --- !u!4 &837986414
@@ -17508,6 +17512,41 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5779731583033685605, guid: 56c347ffb3d244b19849edcb81705190, type: 3}
   m_PrefabInstance: {fileID: 1544959305}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1553061204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1553061205}
+  m_Layer: 5
+  m_Name: HealthBars
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1553061205
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553061204}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2086815963}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.33, y: 0.70922226}
+  m_AnchorMax: {x: 0.66843754, y: 0.80366665}
+  m_AnchoredPosition: {x: 1.5, y: 11.6882}
+  m_SizeDelta: {x: -1, y: -30.3763}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1553795293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18376,6 +18415,7 @@ MonoBehaviour:
   _startMovePoints: 15
   _initiative: 20
   _fraction: 0
+  _attackRange: 12
   _characterName: Farion
   _portrait: {fileID: 21300000, guid: 635e4efbf4c214a48b4d46c765cecd30, type: 3}
 --- !u!4 &1967860004
@@ -18582,6 +18622,7 @@ RectTransform:
   m_Children:
   - {fileID: 1853504513}
   - {fileID: 102087037}
+  - {fileID: 1553061205}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -18603,6 +18644,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _endTurnButton: {fileID: 538131194}
   _characterInitiativePrefab: {fileID: 7360455938804237156, guid: 4841fcae59ec643de9da40a72f050669, type: 3}
+  _healthbarPrefab: {fileID: 2880471823283212217, guid: 85634f63cb3f64252ad098d034618605, type: 3}
+  _healthbars: {fileID: 1553061205}
   _initiativeLine: {fileID: 342675814}
 --- !u!1 &2113206349
 GameObject:

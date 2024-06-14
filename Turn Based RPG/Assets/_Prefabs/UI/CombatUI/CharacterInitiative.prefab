@@ -145,6 +145,7 @@ MonoBehaviour:
   _name: {fileID: 3505493806720700832}
   _rt: {fileID: 5999404953584749843}
   _outline: {fileID: 6740614751397199667}
+  _inline: {fileID: 0}
 --- !u!1 &3744764207483335311
 GameObject:
   m_ObjectHideFlags: 0

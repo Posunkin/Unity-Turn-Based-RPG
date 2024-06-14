@@ -15,6 +15,7 @@ public class Character : MonoBehaviour, IDamageable
     public string characterName { get => _characterName; }
     public Sprite portrait { get => _portrait; }
     public CharacterFraction fraction { get => _fraction; }
+    public CharacterHealth characterHealth { get => _health; }
 
     [Header("Combat parameters")]
     [SerializeField] private float _moveSpeed;
@@ -23,6 +24,7 @@ public class Character : MonoBehaviour, IDamageable
     [SerializeField] private int _startMovePoints;
     [SerializeField] private int _initiative;
     [SerializeField] private CharacterFraction _fraction;
+    [SerializeField] private int _attackRange;
     private CharacterHealth _health;
     private Attack _attack;
 
@@ -46,13 +48,13 @@ public class Character : MonoBehaviour, IDamageable
     private void Awake()
     {
         _gridObject = GetComponent<GridObject>();
+        characterStats = new CharacterStats(_strenght, _endurance, _startMovePoints, _initiative);
+        _health = new CharacterHealth(characterStats);
+        _attack = new Attack(characterStats);
     }
 
     private void Start()
     {
-        characterStats = new CharacterStats(_strenght, _endurance, _startMovePoints, _initiative);
-        _health = new CharacterHealth(characterStats);
-        _attack = new Attack(characterStats);
         _combatController.AddCharacter(this);
         transform.position = _grid.GetGridPosition(transform.position);
         _grid.SetGridObject(transform.position, _gridObject);
@@ -78,7 +80,7 @@ public class Character : MonoBehaviour, IDamageable
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Movement(mousePos);
             ChooseTarget(mousePos);
-            if (Input.GetMouseButtonDown(0) && !_isDoingAction) AttackTarget();
+            AttackTarget();
         }
     }
 
@@ -87,12 +89,12 @@ public class Character : MonoBehaviour, IDamageable
         if (!_isDoingAction && _movePoints > 0)
         {
             _grid.DrawPath(transform.position, mousePos);
-            if (Input.GetMouseButtonDown(0) && !_isDoingAction)
+            if (Input.GetMouseButtonDown(0))
             {
-                if (_actionRoutine != null) StopCoroutine(_actionRoutine);
                 _path = _grid.GetPath(mousePos);
-                if (_path != null && _actionRoutine == null)
+                if (_path != null)
                 {
+                    if (_selectedObj == null || _grid.CalculateDistanceToTarget(transform.position, _selectedObj.transform.position) > _attackRange)
                     _actionRoutine = StartCoroutine(MoveRoutine());
                 } 
             }
@@ -126,7 +128,8 @@ public class Character : MonoBehaviour, IDamageable
     private void AttackTarget()
     {
         if (_selectedObj == null) return;
-        if (_grid.CalculateDistanceToTarget(transform.position, _selectedObj.transform.position) <= 1)
+        if (_grid.CalculateDistanceToTarget(transform.position, _selectedObj.transform.position) <= _attackRange
+        && Input.GetMouseButtonDown(0) && !_isDoingAction)
         {
             Character ch = _selectedObj.GetComponent<Character>();
             Debug.Log(ch);
@@ -164,30 +167,6 @@ public class Character : MonoBehaviour, IDamageable
         _isDoingAction = false;
         transform.position = _grid.GetGridPosition(transform.position);
         Vector2 endPos = transform.position;
-        _grid.SetGridObject(startPos, endPos, _gridObject);
-        _grid.FindReachableNodes(transform.position, _movePoints);
-        _path.Clear();
-    }
-
-    private IEnumerator MoveWithAttackRoutine(GridObject obj)
-    {
-        _isDoingAction = true;
-        Vector2 startPos = transform.position;
-        for (int i = 0; i < _path.Count; i++)
-        {
-            _movePoints -= (int)(3 * _path[i].movePenalty);
-            while (Vector2.Distance(transform.position, _path[i].position) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, _path[i].position, _moveSpeed * Time.deltaTime);
-                yield return null;
-            }
-            transform.position = _path[i].position;
-        }
-        _isDoingAction = false;
-        transform.position = _grid.GetGridPosition(transform.position);
-        Vector2 endPos = transform.position;
-        Character ch = obj.GetComponent<Character>();
-        _attack.AttackTarget(ch);
         _grid.SetGridObject(startPos, endPos, _gridObject);
         _grid.FindReachableNodes(transform.position, _movePoints);
         _path.Clear();
