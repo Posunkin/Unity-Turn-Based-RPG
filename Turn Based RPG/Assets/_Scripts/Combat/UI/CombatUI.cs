@@ -9,6 +9,7 @@ public class CombatUI : MonoBehaviour
     [SerializeField] private Healthbar _healthbarPrefab;
     [SerializeField] private Transform _healthbars;
     [SerializeField] private Transform _initiativeLine;
+    private CharacterInitiative[] _charactersPositions;
     public Button endTurnButton { get; }
 
     private CharacterInitiative[] _characterInitiatives;
@@ -31,13 +32,22 @@ public class CombatUI : MonoBehaviour
             _index++;
         }
         _index = 0;
+        _charactersPositions = _initiativeLine.GetComponentsInChildren<CharacterInitiative>();
+        foreach (var port in _charactersPositions)
+        {
+            Debug.Log(port.name);
+        }
         _characterInitiatives[_index].TurnStart();
     }
 
     private void ChangeCharacter()
     {
+        CharacterInitiative current = _charactersPositions[0];
+        current.transform.SetSiblingIndex(_charactersPositions.Length - 1);
+        _charactersPositions[_charactersPositions.Length - 1] = current;
         _characterInitiatives[_index].TurnEnd();
         _index = _index < _characterInitiatives.Length - 1 ? ++_index : _index = 0;
         _characterInitiatives[_index].TurnStart();
+        _charactersPositions[0] = _characterInitiatives[_index];
     }
 }

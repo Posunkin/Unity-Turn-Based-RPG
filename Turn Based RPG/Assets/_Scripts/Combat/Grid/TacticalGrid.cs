@@ -168,9 +168,8 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
-    public void FindReachableNodes(Vector2 startPos, int movePoints)
+    public void FindReachableNodes(Vector2 startPos, int movePoints, CharacterFraction fraction)
     {
-        CharacterFraction fraction = _pathNodes[startPos].gridObject.GetComponent<Character>().fraction;
         foreach (var node in _reachableNodes)
         {
             node.Deactivate();
@@ -192,7 +191,14 @@ public class TacticalGrid : MonoBehaviour
             {
                 _reachableNodes.Add(node);
                 node.Activate();
-                node.Target();
+                if (node.gridObject.fraction == fraction)
+                {
+                    node.AllyTarget();
+                }
+                else
+                {
+                    node.AttackTarget();
+                }
             }
             else
             {
@@ -203,10 +209,9 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
-    public void FindTargetNodes(Vector2 pos)
+    public void FindTargetNodes(Vector2 pos, CharacterFraction fraction)
     {
         Vector2 nodePos = GetGridPosition(pos);
-        CharacterFraction fraction = _pathNodes[nodePos].gridObject.GetComponent<Character>().fraction;
         PathNode node = _pathNodes[nodePos];
         _reachableNodes = _pathfinding.GetNeighbours(node);
         foreach (var n in _reachableNodes)
@@ -218,7 +223,14 @@ public class TacticalGrid : MonoBehaviour
             else
             {
                 n.Activate();
-                n.Target();
+                if (n.gridObject.fraction == fraction)
+                {
+                    n.AllyTarget();
+                }
+                else
+                {
+                    n.AttackTarget();
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ public class CharacterHealth
 {
     public Action<int> OnHealthChanged;
     public int maxHealth { get => _maxHealth; }
+    public int currentHealth { get => _currentHealth; }
     private CharacterStats _stats;
     private int _maxHealth;
     private int _currentHealth;

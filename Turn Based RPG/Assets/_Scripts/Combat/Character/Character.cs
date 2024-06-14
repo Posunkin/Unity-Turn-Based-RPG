@@ -22,9 +22,12 @@ public class Character : MonoBehaviour, IDamageable
     [SerializeField] private int _strenght;
     [SerializeField] private int _endurance;
     [SerializeField] private int _startMovePoints;
+    [SerializeField] private int _startActionPoints;
     [SerializeField] private int _initiative;
     [SerializeField] private CharacterFraction _fraction;
     [SerializeField] private int _attackRange;
+    private int _actionPoints;
+    private int _energy = 10;
     private CharacterHealth _health;
     private Attack _attack;
 
@@ -36,6 +39,7 @@ public class Character : MonoBehaviour, IDamageable
     private TacticalGrid _grid;
     private CombatController _combatController;
     private GridObject _gridObject;
+    private CharacterUI _characterUI;
 
     private int _movePoints;
     private Coroutine _actionRoutine;
@@ -69,10 +73,13 @@ public class Character : MonoBehaviour, IDamageable
         _combatController = controller;
     }
 
-    public IEnumerator StartTurn()
+    public IEnumerator StartTurn(CharacterUI ui)
     {
         _movePoints = _startMovePoints;
-        _grid.FindReachableNodes(transform.position, _movePoints);
+        _actionPoints = _startActionPoints;
+        _characterUI = ui;
+        _characterUI.SetUI(_health.maxHealth, _energy, _movePoints, _actionPoints);
+        _grid.FindReachableNodes(transform.position, _movePoints, fraction);
         _selected = true;
         while (_selected)
         {
@@ -102,7 +109,7 @@ public class Character : MonoBehaviour, IDamageable
         else if (!_isDoingAction)
         {
             _grid.Clear(transform.position);
-            _grid.FindTargetNodes(transform.position);
+            _grid.FindTargetNodes(transform.position, fraction);
         }
     }
 
@@ -127,13 +134,15 @@ public class Character : MonoBehaviour, IDamageable
 
     private void AttackTarget()
     {
-        if (_selectedObj == null) return;
+        if (_selectedObj == null || _actionPoints == 0) return;
         if (_grid.CalculateDistanceToTarget(transform.position, _selectedObj.transform.position) <= _attackRange
         && Input.GetMouseButtonDown(0) && !_isDoingAction)
         {
             Character ch = _selectedObj.GetComponent<Character>();
             Debug.Log(ch);
             _attack.AttackTarget(ch);
+            _actionPoints--;
+            _characterUI.DisablePoint();
             _actionRoutine = StartCoroutine(AttackRoutine());
         }
     }
@@ -163,22 +172,18 @@ public class Character : MonoBehaviour, IDamageable
                 yield return null;
             }
             transform.position = _path[i].position;
+            _characterUI.ChangeMovement(_movePoints);
         }
         _isDoingAction = false;
         transform.position = _grid.GetGridPosition(transform.position);
         Vector2 endPos = transform.position;
         _grid.SetGridObject(startPos, endPos, _gridObject);
-        _grid.FindReachableNodes(transform.position, _movePoints);
+        _grid.FindReachableNodes(transform.position, _movePoints, fraction);
         _path.Clear();
     }
 
     public void TakeDamage(int damage)
     {
         _health.SubstructHealth(damage);
-    }
-
-    public CharacterFraction GetFraction()
-    {
-        return _fraction;
     }
 }

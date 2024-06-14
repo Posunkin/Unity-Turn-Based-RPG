@@ -1,25 +1,20 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Healthbar : MonoBehaviour
+public class Healthbar : BarUI
 {
-    [SerializeField] private Slider _slider;
     [SerializeField] private TextMeshProUGUI _name;
-    [SerializeField] private TextMeshProUGUI _value;
-    private int _maxHealth;
-    private int _currentHealth;
     private CharacterHealth _health;
 
     public void Init(CharacterHealth health, string name)
     {
         _health = health;
-        _maxHealth = _health.maxHealth;
-        _currentHealth = _maxHealth;
-        _slider.maxValue = _maxHealth;
-        _slider.value = _maxHealth;
+        _maxValue = _health.maxHealth;
+        _currentValue = _maxValue;
+        _slider.maxValue = _maxValue;
+        _slider.value = _maxValue;
         _name.text = name;
-        _value.text = $"{_currentHealth} / {_maxHealth}";
+        _value.text = $"{_currentValue} / {_maxValue}";
         gameObject.SetActive(false);
         _health.OnHealthChanged += ChangeValue;
     }
@@ -37,20 +32,5 @@ public class Healthbar : MonoBehaviour
     public void Unlight()
     {
         gameObject.SetActive(false);
-    }
-
-    public void ChangeValue(int health)
-    {
-        if (health > 0)
-        {
-            _currentHealth = health;
-            _slider.value = health;
-            _value.text = $"{_currentHealth} / {_maxHealth}";
-        } 
-        else
-        {
-            _slider.value = 0;
-            _value.text = $"0 / {_maxHealth}";
-        }
     }
 }

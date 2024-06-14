@@ -8,6 +8,7 @@ public class CombatController : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private CombatUI _combatUI;
+    [SerializeField] private CharacterUI _characterUI;
     [SerializeField] private Button _endTurnButton;
 
     private Queue<Character> _turnQueue = new Queue<Character>();
@@ -59,7 +60,7 @@ public class CombatController : MonoBehaviour
         {
             _selectedCharacter = _turnQueue.Dequeue();
             if (_characterRoutine != null) StopCoroutine(_characterRoutine);
-            _characterRoutine = StartCoroutine(_selectedCharacter.StartTurn());
+            _characterRoutine = StartCoroutine(_selectedCharacter.StartTurn(_characterUI));
         }
         else 
             NextRound();

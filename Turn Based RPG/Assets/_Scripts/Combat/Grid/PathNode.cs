@@ -20,6 +20,7 @@ public class PathNode : MonoBehaviour
     [SerializeField] protected Color activeColor;
     [SerializeField] protected Color deactiveColor;
     [SerializeField] protected Color attackColor;
+    [SerializeField] protected Color allyColor;
 
 
     protected void Awake()
@@ -48,6 +49,11 @@ public class PathNode : MonoBehaviour
     public void AttackTarget()
     {
         _rend.color = attackColor;
+    }
+
+    public void AllyTarget()
+    {
+        _rend.color = allyColor;
     }   
 
     public void Untarget()

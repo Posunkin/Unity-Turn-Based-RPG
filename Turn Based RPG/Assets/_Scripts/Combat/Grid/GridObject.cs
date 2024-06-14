@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GridObject : MonoBehaviour
 {
+    public CharacterFraction fraction { get => _fraction; }
     [SerializeField] private SpriteRenderer _outline;
     private Healthbar _healthbar;
     private CharacterInitiative _init;

@@ -101,6 +101,8 @@ MonoBehaviour:
   gValue: 0
   hValue: 0
   parentNode: {fileID: 0}
+  gridObject: {fileID: 0}
   activeColor: {r: 1, g: 1, b: 1, a: 0.39215687}
   deactiveColor: {r: 0.4431373, g: 0.7725491, b: 0.4431373, a: 0.39215687}
   attackColor: {r: 0.9245283, g: 0, b: 0, a: 0.39215687}
+  allyColor: {r: 0, g: 0, b: 1, a: 0.39215687}
