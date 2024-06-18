@@ -34,6 +34,12 @@ public class Character : MonoBehaviour, IDamageable
     [Header("UI Elements"), Space(5)]
     [SerializeField] private string _characterName;
     [SerializeField] private Sprite _portrait;
+
+    [Header("Fireball test"), Space(5)]
+    [SerializeField] private int _range;
+    [SerializeField] private int _distance;
+    [SerializeField] private int _damage;
+    private Fireball _fireball;
    
 
     private TacticalGrid _grid;
@@ -55,6 +61,7 @@ public class Character : MonoBehaviour, IDamageable
         characterStats = new CharacterStats(_strenght, _endurance, _startMovePoints, _initiative);
         _health = new CharacterHealth(characterStats);
         _attack = new Attack(characterStats);
+        _fireball = new Fireball(_grid, _range, _distance, _damage, this);
     }
 
     private void Start()
@@ -85,9 +92,10 @@ public class Character : MonoBehaviour, IDamageable
         {
             yield return null;
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Movement(mousePos);
-            ChooseTarget(mousePos);
-            AttackTarget();
+            // Movement(mousePos);
+            // ChooseTarget(mousePos);
+            // AttackTarget();
+            _fireball.Target(mousePos);
         }
     }
 
@@ -109,7 +117,7 @@ public class Character : MonoBehaviour, IDamageable
         else if (!_isDoingAction)
         {
             _grid.Clear(transform.position);
-            _grid.FindTargetNodes(transform.position, fraction);
+            _grid.FindTargetNodes(transform.position, _attackRange, fraction);
         }
     }
 
@@ -150,6 +158,7 @@ public class Character : MonoBehaviour, IDamageable
     public void EndTurn()
     {
         _selected = false;
+        _fireball.UnCast();
     }
 
     private IEnumerator AttackRoutine()
@@ -186,4 +195,5 @@ public class Character : MonoBehaviour, IDamageable
     {
         _health.SubstructHealth(damage);
     }
+
 }

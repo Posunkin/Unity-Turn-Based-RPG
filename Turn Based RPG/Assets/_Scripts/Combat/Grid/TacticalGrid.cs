@@ -16,9 +16,9 @@ public class TacticalGrid : MonoBehaviour
     private List<PathNode> _path = new List<PathNode>();
     private List<PathNode> _reachableNodes = new List<PathNode>();
     private List<PathNode> _walkableNodes = new List<PathNode>();
+    private List<PathNode> _spellArea = new List<PathNode>();
     private PathNode _highlightNode;
     private Pathfinding _pathfinding;
-    private bool _pathToTarget = false;
 
     private LineRenderer _line;
 
@@ -30,6 +30,7 @@ public class TacticalGrid : MonoBehaviour
         _pathfinding = new Pathfinding(_pathNodesPositions, _pathNodes);
     }
 
+    #region Grid nodes
     private void InitializeGrid()
     {
         _pathNodesPositions = new Vector2[_width, _height];
@@ -78,7 +79,9 @@ public class TacticalGrid : MonoBehaviour
         }
         _pathfinding.Refresh(_pathNodes);
     }
+    #endregion
 
+    #region Grid positions and calculating methods
     public Vector2 GetGridPosition(Vector2 worldPosition)
     {
         int y = Mathf.FloorToInt(worldPosition.y / _offsetY);
@@ -94,145 +97,19 @@ public class TacticalGrid : MonoBehaviour
         }
     }
 
-    public List<PathNode> GetPath(Vector2 endPos)
+       public bool NodeIsReacheable(Vector2 pos)
     {
-        PathNode endNode = _pathNodes[GetGridPosition(endPos)];
-        if (_path != null && (_reachableNodes.Contains(endNode) || _walkableNodes.Contains(endNode)))
-        {
-            return _path;
-        }
-        else
-        {
-            Debug.Log("Position is unreachable");
-            return null;
-        }
-    }
-
-    public void DrawPath(Vector2 startPos, Vector2 endPos)
-    {
-        Vector2 start = GetGridPosition(startPos);
-        Vector2 end = GetGridPosition(endPos);
-        PathNode startNode = _pathNodes[start];
-        PathNode endNode = _pathNodes[end];
-        if (!_reachableNodes.Contains(endNode) && !_walkableNodes.Contains(endNode)) 
-        {
-            _line.enabled = false;
-            if (_highlightNode != null) _highlightNode.Untarget();
-            return;
-        }
-        startNode.Target();
-        foreach (var node in _walkableNodes)
-        {
-            node.Untarget();
-        }
-        if (endNode.gridObject != null)
-        {
-            _path = _pathfinding.FindPathToTarget(start, end);
-            if (_path != null && _path.Count > 0) _path.RemoveAt(_path.Count - 1);
-        }
-        else
-        {
-            _path = _pathfinding.FindPath(start, end);
-        }
-        
-        if (_path != null)
-        {
-            if (_path.Count > 0) 
-            {
-                int index = _path.Count - 1;
-                _highlightNode = _path[index];
-                _highlightNode.Target();
-            }
-            _line.positionCount = _path.Count + 1;
-            _line.SetPosition(0, start);
-            for (int i = 0; i < _path.Count; i++)
-            {
-                _line.SetPosition(i + 1, _path[i].position);
-            }
-            _line.enabled = true;
-        }
-    }
-
-    public void Clear(Vector2 pos)
-    {
-        Vector2 gridPos = GetGridPosition(pos);
-        _pathNodes[gridPos].Deactivate();
-        _line.enabled = false;
-        foreach (var node in _reachableNodes)
-        {
-            node.Deactivate();
-        }
-        foreach (var node in _walkableNodes)
-        {
-            node.Deactivate();
-        }
-    }
-
-    public void FindReachableNodes(Vector2 startPos, int movePoints, CharacterFraction fraction)
-    {
-        foreach (var node in _reachableNodes)
-        {
-            node.Deactivate();
-        }
-        foreach (var node in _walkableNodes)
-        {
-            node.Deactivate();
-        }
-        _reachableNodes.Clear();
-        _walkableNodes.Clear();
-        Vector2 start = GetGridPosition(startPos);
-        PathNode current = _pathNodes[start];
-        current.Activate();
-        current.Target();
-        List<PathNode> nodes = _pathfinding.FindReachableNodes(start, movePoints);
-        foreach (var node in nodes)
-        {
-            if (node.gridObject != null)
-            {
-                _reachableNodes.Add(node);
-                node.Activate();
-                if (node.gridObject.fraction == fraction)
-                {
-                    node.AllyTarget();
-                }
-                else
-                {
-                    node.AttackTarget();
-                }
-            }
-            else
-            {
-                _walkableNodes.Add(node);
-                node.Activate();
-                node.Untarget();
-            }
-        }
-    }
-
-    public void FindTargetNodes(Vector2 pos, CharacterFraction fraction)
-    {
+        bool nodeIsReacheable = false;
         Vector2 nodePos = GetGridPosition(pos);
-        PathNode node = _pathNodes[nodePos];
-        _reachableNodes = _pathfinding.GetNeighbours(node);
-        foreach (var n in _reachableNodes)
+        foreach (var node in _reachableNodes)
         {
-            if (n.gridObject == null)
+            if (node.position == nodePos) 
             {
-                n.Deactivate();
-            }
-            else
-            {
-                n.Activate();
-                if (n.gridObject.fraction == fraction)
-                {
-                    n.AllyTarget();
-                }
-                else
-                {
-                    n.AttackTarget();
-                }
+                nodeIsReacheable = true;
             }
         }
+
+        return nodeIsReacheable;
     }
 
     public int CalculateDistance(Vector2 a, Vector2 b)
@@ -281,6 +158,270 @@ public class TacticalGrid : MonoBehaviour
             return null;
         }
     }
+    #endregion
+
+    #region Pathfinding    
+    public List<PathNode> GetPath(Vector2 endPos)
+    {
+        PathNode endNode = _pathNodes[GetGridPosition(endPos)];
+        if (_path != null && (_reachableNodes.Contains(endNode) || _walkableNodes.Contains(endNode)))
+        {
+            return _path;
+        }
+        else
+        {
+            Debug.Log("Position is unreachable");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Visualy highlighting path on the grid
+    /// </summary>
+    /// <param name="startPos"> Path from </param>
+    /// <param name="endPos"> to </param> 
+    public void DrawPath(Vector2 startPos, Vector2 endPos)
+    {
+        Vector2 start = GetGridPosition(startPos);
+        Vector2 end = GetGridPosition(endPos);
+        PathNode startNode = _pathNodes[start];
+        PathNode endNode = _pathNodes[end];
+        if (!_reachableNodes.Contains(endNode) && !_walkableNodes.Contains(endNode)) 
+        {
+            _line.enabled = false;
+            if (_highlightNode != null) _highlightNode.Untarget();
+            return;
+        }
+        startNode.Target();
+        foreach (var node in _walkableNodes)
+        {
+            node.Untarget();
+        }
+        if (endNode.gridObject != null)
+        {
+            _path = _pathfinding.FindPathToTarget(start, end);
+            if (_path != null && _path.Count > 0) _path.RemoveAt(_path.Count - 1);
+        }
+        else
+        {
+            _path = _pathfinding.FindPath(start, end);
+        }
+        
+        if (_path != null)
+        {
+            if (_path.Count > 0) 
+            {
+                int index = _path.Count - 1;
+                _highlightNode = _path[index];
+                _highlightNode.Target();
+            }
+            _line.positionCount = _path.Count + 1;
+            _line.SetPosition(0, start);
+            for (int i = 0; i < _path.Count; i++)
+            {
+                _line.SetPosition(i + 1, _path[i].position);
+            }
+            _line.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Unlight all nodes with the character node
+    /// </summary>
+    public void Clear(Vector2 pos)
+    {
+        Vector2 gridPos = GetGridPosition(pos);
+        _pathNodes[gridPos].Deactivate();
+        _line.enabled = false;
+        foreach (var node in _reachableNodes)
+        {
+            node.Deactivate();
+        }
+        foreach (var node in _walkableNodes)
+        {
+            node.Deactivate();
+        }
+    }
+
+    /// <summary>
+    /// Unlight all nodes without character node
+    /// </summary>
+    public void Clear()
+    {
+        _line.enabled = false;
+        foreach (var node in _reachableNodes)
+        {
+            node.Deactivate();
+        }
+        foreach (var node in _walkableNodes)
+        {
+            node.Deactivate();
+        }
+    }
+
+    /// <summary>
+    /// Highlighting all walkable nodes, allies, and targets for attack
+    /// </summary>
+    public void FindReachableNodes(Vector2 startPos, int movePoints, CharacterFraction fraction)
+    {
+        ClearNodes();
+        Vector2 start = GetGridPosition(startPos);
+        PathNode current = _pathNodes[start];
+        current.Activate();
+        current.Target();
+        List<PathNode> nodes = _pathfinding.FindReachableNodes(start, movePoints);
+        foreach (var node in nodes)
+        {
+            if (node.gridObject != null)
+            {
+                _reachableNodes.Add(node);
+                node.Activate();
+                if (node.gridObject.fraction == fraction)
+                {
+                    node.AllyTarget();
+                }
+                else
+                {
+                    node.AttackTarget();
+                }
+            }
+            else
+            {
+                _walkableNodes.Add(node);
+                node.Activate();
+                node.Untarget();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clearing the lists of reachable and walkable nodes
+    /// </summary>
+    private void ClearNodes()
+    {
+        foreach (var node in _reachableNodes)
+        {
+            node.Deactivate();
+        }
+        foreach (var node in _walkableNodes)
+        {
+            node.Deactivate();
+        }
+        _reachableNodes.Clear();
+        _walkableNodes.Clear();
+    }
+
+    /// <summary>
+    /// Only highlighting nodes with characters (use if character doesn't have movepoints, but have action points)
+    /// </summary>
+    public void FindTargetNodes(Vector2 pos, CharacterFraction fraction)
+    {
+        Vector2 nodePos = GetGridPosition(pos);
+        PathNode node = _pathNodes[nodePos];
+        _reachableNodes = _pathfinding.GetNeighbours(node);
+        foreach (var n in _reachableNodes)
+        {
+            if (n.gridObject == null)
+            {
+                n.Deactivate();
+            }
+            else
+            {
+                n.Activate();
+                if (n.gridObject.fraction == fraction)
+                {
+                    n.AllyTarget();
+                }
+                else
+                {
+                    n.AttackTarget();
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// For range attack
+    /// </summary>
+    public void FindTargetNodes(Vector2 pos, int attackRange, CharacterFraction fraction)
+    {
+        List<PathNode> reachableNodes = _pathfinding.FindReachableNodes(pos, attackRange * 3);
+        foreach (var node in reachableNodes)
+        {
+            if (node.gridObject == null) node.Deactivate();
+            else
+            {
+                if (node.gridObject.fraction == fraction)
+                {
+                    node.Activate();
+                    node.AllyTarget();
+                }
+                else
+                {
+                    node.Activate();
+                    node.AttackTarget();
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Spell casting highlights
+    public void GetReachableArea(Vector2 pos, int distance, CharacterFraction fraction)
+    {
+        ClearNodes();
+        Vector2 start = GetGridPosition(pos);
+        PathNode current = _pathNodes[start];
+        current.Activate();
+        current.Target();
+        List<PathNode> nodes = _pathfinding.FindReachableNodes(start, distance);
+        foreach (var node in nodes)
+        {
+            _reachableNodes.Add(node);
+            if (node.gridObject != null)
+            {
+                node.Activate();
+                if (node.gridObject.fraction == fraction)
+                {
+                    node.AllyTarget();
+                }
+                else
+                {
+                    node.AttackTarget();
+                }
+            }
+            else
+            {
+                node.Activate();
+                node.Untarget();
+            }
+        }
+    }
+
+    public void HighlightSpellArea(Vector2 pos, int range)
+    {
+        Vector2 nodePos = GetGridPosition(pos);
+        _spellArea = _pathfinding.FindReachableNodes(nodePos, range);
+        if (_spellArea != null)
+        {
+            foreach (var node in _spellArea)
+            {
+                if (node.gridObject == null) node.Target();
+            }
+        }
+    }
+
+    public void UnlightSpellArea()
+    {
+        if (_spellArea != null)
+        {
+            foreach (var node in _spellArea)
+            {
+                if (node.gridObject == null) node.Untarget();
+            }
+        }
+    }
+    #endregion
 
     private void OnDrawGizmos()
     {

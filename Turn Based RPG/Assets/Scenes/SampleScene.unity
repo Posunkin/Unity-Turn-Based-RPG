@@ -382,6 +382,9 @@ MonoBehaviour:
   _attackRange: 8
   _characterName: Zana
   _portrait: {fileID: 21300000, guid: 3554ef6b3627545ddb071ae5d9abe498, type: 3}
+  _range: 1
+  _distance: 1
+  _damage: 1
 --- !u!4 &60147212
 Transform:
   m_ObjectHideFlags: 0
@@ -614,6 +617,9 @@ MonoBehaviour:
   _attackRange: 1
   _characterName: John
   _portrait: {fileID: 21300000, guid: d1038bf1b4331443c9ac0b94294b7580, type: 3}
+  _range: 1
+  _distance: 3
+  _damage: 3
 --- !u!114 &136949472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1880,6 +1886,9 @@ MonoBehaviour:
   _attackRange: 2
   _characterName: Alice
   _portrait: {fileID: 21300000, guid: a11e4aa705cc14affa4a93c9442fa9d7, type: 3}
+  _range: 1
+  _distance: 1
+  _damage: 1
 --- !u!4 &612252134
 Transform:
   m_ObjectHideFlags: 0
@@ -16798,6 +16807,9 @@ MonoBehaviour:
   _attackRange: 1
   _characterName: Bandit
   _portrait: {fileID: 21300000, guid: a86fc9c7f534644cca2e9ca229dd1788, type: 3}
+  _range: 3
+  _distance: 12
+  _damage: 1
 --- !u!4 &837986414
 Transform:
   m_ObjectHideFlags: 0
@@ -17729,7 +17741,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.74, y: 1.22}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -18004,7 +18016,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.25, y: 2.6666667}
+  m_Size: {x: 1.125, y: 1.3333334}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -18251,6 +18263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1782101119}
   - component: {fileID: 1782101120}
+  - component: {fileID: 1782101121}
   m_Layer: 6
   m_Name: Visual
   m_TagString: Untagged
@@ -18321,12 +18334,33 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.25, y: 2.6666667}
+  m_Size: {x: 1.125, y: 1.3333334}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1782101121
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782101118}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1821519529
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18873,6 +18907,9 @@ MonoBehaviour:
   _attackRange: 12
   _characterName: Farion
   _portrait: {fileID: 21300000, guid: 635e4efbf4c214a48b4d46c765cecd30, type: 3}
+  _range: 2
+  _distance: 5
+  _damage: 3
 --- !u!4 &1967860004
 Transform:
   m_ObjectHideFlags: 0
@@ -19185,7 +19222,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.25, y: 2.6666667}
+  m_Size: {x: 0.74, y: 1.22}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
