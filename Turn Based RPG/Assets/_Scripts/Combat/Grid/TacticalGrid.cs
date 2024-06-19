@@ -16,6 +16,7 @@ public class TacticalGrid : MonoBehaviour
     private List<PathNode> _path = new List<PathNode>();
     private List<PathNode> _reachableNodes = new List<PathNode>();
     private List<PathNode> _walkableNodes = new List<PathNode>();
+    private List<PathNode> _attackArea = new List<PathNode>();
     private List<PathNode> _spellArea = new List<PathNode>();
     private PathNode _highlightNode;
     private Pathfinding _pathfinding;
@@ -135,7 +136,6 @@ public class TacticalGrid : MonoBehaviour
         Vector2 nodeStartPos = GetGridPosition(startPos);
         Vector2 nodeEndPos = GetGridPosition(endPos);
         _pathNodes[nodeStartPos].gridObject = null;
-        _pathNodes[nodeStartPos].Deactivate();
         _pathNodes[nodeEndPos].gridObject = obj;
     }
 
@@ -262,7 +262,7 @@ public class TacticalGrid : MonoBehaviour
     /// <summary>
     /// Highlighting all walkable nodes, allies, and targets for attack
     /// </summary>
-    public void FindReachableNodes(Vector2 startPos, int movePoints, CharacterFraction fraction)
+    public void FindReachableNodes(Vector2 startPos, int movePoints)
     {
         ClearNodes();
         Vector2 start = GetGridPosition(startPos);
@@ -275,15 +275,7 @@ public class TacticalGrid : MonoBehaviour
             if (node.gridObject != null)
             {
                 _reachableNodes.Add(node);
-                node.Activate();
-                if (node.gridObject.fraction == fraction)
-                {
-                    node.AllyTarget();
-                }
-                else
-                {
-                    node.AttackTarget();
-                }
+                node.Deactivate();
             }
             else
             {
@@ -307,37 +299,13 @@ public class TacticalGrid : MonoBehaviour
         {
             node.Deactivate();
         }
+        foreach (var node in _attackArea)
+        {
+            node.Deactivate();
+        }
+        _attackArea.Clear();
         _reachableNodes.Clear();
         _walkableNodes.Clear();
-    }
-
-    /// <summary>
-    /// Only highlighting nodes with characters (use if character doesn't have movepoints, but have action points)
-    /// </summary>
-    public void FindTargetNodes(Vector2 pos, CharacterFraction fraction)
-    {
-        Vector2 nodePos = GetGridPosition(pos);
-        PathNode node = _pathNodes[nodePos];
-        _reachableNodes = _pathfinding.GetNeighbours(node);
-        foreach (var n in _reachableNodes)
-        {
-            if (n.gridObject == null)
-            {
-                n.Deactivate();
-            }
-            else
-            {
-                n.Activate();
-                if (n.gridObject.fraction == fraction)
-                {
-                    n.AllyTarget();
-                }
-                else
-                {
-                    n.AttackTarget();
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -345,12 +313,13 @@ public class TacticalGrid : MonoBehaviour
     /// </summary>
     public void FindTargetNodes(Vector2 pos, int attackRange, CharacterFraction fraction)
     {
-        List<PathNode> reachableNodes = _pathfinding.FindReachableNodes(pos, attackRange * 3);
-        foreach (var node in reachableNodes)
+        if (_attackArea != null) _attackArea.Clear();
+        List<PathNode> nodesInRange = _pathfinding.FindReachableNodes(pos, attackRange);
+        foreach (var node in nodesInRange)
         {
-            if (node.gridObject == null) node.Deactivate();
-            else
+            if (node.gridObject != null) 
             {
+                _attackArea.Add(node);
                 if (node.gridObject.fraction == fraction)
                 {
                     node.Activate();

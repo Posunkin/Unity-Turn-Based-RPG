@@ -11,7 +11,7 @@ public class CharacterUI : MonoBehaviour
     private List<ActionPointUI> _actionPoints = new List<ActionPointUI>();
     private Stack<ActionPointUI> _currentPoints = new Stack<ActionPointUI>();
 
-    public void SetUI(int health, int energy, int movement, int actionPoints)
+    public void SetUI(int maxHealth, int currentHealth, int energy, int movement, int actionPoints)
     {
         if (_currentPoints != null) _currentPoints.Clear();
         if (_actionPoints != null)
@@ -21,7 +21,8 @@ public class CharacterUI : MonoBehaviour
                 actionPoint.gameObject.SetActive(false);
             }
         }
-        _healthbar.InitBar(health);
+        _healthbar.InitBar(maxHealth);
+        _healthbar.ChangeValue(currentHealth);
         _energybar.InitBar(energy);
         _movementbar.InitBar(movement);
         while (_actionPoints.Count < actionPoints)

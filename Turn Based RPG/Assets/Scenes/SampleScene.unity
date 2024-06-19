@@ -375,16 +375,13 @@ MonoBehaviour:
   _moveSpeed: 2
   _strenght: 8
   _endurance: 10
-  _startMovePoints: 9
+  _startMovePoints: 4
   _startActionPoints: 2
   _initiative: 10
   _fraction: 0
-  _attackRange: 8
+  _attackRange: 6
   _characterName: Zana
   _portrait: {fileID: 21300000, guid: 3554ef6b3627545ddb071ae5d9abe498, type: 3}
-  _range: 1
-  _distance: 1
-  _damage: 1
 --- !u!4 &60147212
 Transform:
   m_ObjectHideFlags: 0
@@ -610,16 +607,13 @@ MonoBehaviour:
   _moveSpeed: 2
   _strenght: 15
   _endurance: 15
-  _startMovePoints: 15
+  _startMovePoints: 5
   _startActionPoints: 2
   _initiative: 20
   _fraction: 0
   _attackRange: 1
   _characterName: John
   _portrait: {fileID: 21300000, guid: d1038bf1b4331443c9ac0b94294b7580, type: 3}
-  _range: 1
-  _distance: 3
-  _damage: 3
 --- !u!114 &136949472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1879,16 +1873,13 @@ MonoBehaviour:
   _moveSpeed: 2
   _strenght: 12
   _endurance: 12
-  _startMovePoints: 12
+  _startMovePoints: 4
   _startActionPoints: 2
   _initiative: 15
   _fraction: 0
   _attackRange: 2
   _characterName: Alice
   _portrait: {fileID: 21300000, guid: a11e4aa705cc14affa4a93c9442fa9d7, type: 3}
-  _range: 1
-  _distance: 1
-  _damage: 1
 --- !u!4 &612252134
 Transform:
   m_ObjectHideFlags: 0
@@ -16800,16 +16791,13 @@ MonoBehaviour:
   _moveSpeed: 2
   _strenght: 14
   _endurance: 10
-  _startMovePoints: 15
-  _startActionPoints: 4
-  _initiative: 23
+  _startMovePoints: 5
+  _startActionPoints: 2
+  _initiative: 14
   _fraction: 1
   _attackRange: 1
   _characterName: Bandit
   _portrait: {fileID: 21300000, guid: a86fc9c7f534644cca2e9ca229dd1788, type: 3}
-  _range: 3
-  _distance: 12
-  _damage: 1
 --- !u!4 &837986414
 Transform:
   m_ObjectHideFlags: 0
@@ -17491,6 +17479,50 @@ Transform:
   - {fileID: 837986414}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1403654995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1403654996}
+  - component: {fileID: 1403654997}
+  m_Layer: 0
+  m_Name: InputInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1403654996
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403654995}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1612450352}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1403654997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403654995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50ad26b1aeb1a4834b5d05f9a667e400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1417356691
 GameObject:
   m_ObjectHideFlags: 0
@@ -18053,6 +18085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
+  - {fileID: 1403654997}
   - {fileID: 1849562881}
   - {fileID: 1833046724}
   - {fileID: 1374487890}
@@ -18089,6 +18122,7 @@ Transform:
   - {fileID: 1849562880}
   - {fileID: 1833046723}
   - {fileID: 1374487891}
+  - {fileID: 1403654996}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1671485775
@@ -18900,16 +18934,13 @@ MonoBehaviour:
   _moveSpeed: 2
   _strenght: 10
   _endurance: 10
-  _startMovePoints: 15
+  _startMovePoints: 6
   _startActionPoints: 3
   _initiative: 20
   _fraction: 0
-  _attackRange: 12
+  _attackRange: 8
   _characterName: Farion
   _portrait: {fileID: 21300000, guid: 635e4efbf4c214a48b4d46c765cecd30, type: 3}
-  _range: 2
-  _distance: 5
-  _damage: 3
 --- !u!4 &1967860004
 Transform:
   m_ObjectHideFlags: 0

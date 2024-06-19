@@ -25,7 +25,7 @@ public class CombatUI : MonoBehaviour
         {
             CharacterInitiative charInit = Instantiate(_characterInitiativePrefab, _initiativeLine);
             Healthbar healthbar = Instantiate(_healthbarPrefab, _healthbars);
-            healthbar.Init(character.characterHealth, character.characterName);
+            healthbar.Init(character.health, character.characterName);
             charInit.Set(character.portrait, character.characterName, character.fraction);
             _characterInitiatives[_index] = charInit;
             character.GetComponent<GridObject>().Construct(charInit, healthbar);
@@ -33,10 +33,6 @@ public class CombatUI : MonoBehaviour
         }
         _index = 0;
         _charactersPositions = _initiativeLine.GetComponentsInChildren<CharacterInitiative>();
-        foreach (var port in _charactersPositions)
-        {
-            Debug.Log(port.name);
-        }
         _characterInitiatives[_index].TurnStart();
     }
 

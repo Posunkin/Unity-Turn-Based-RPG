@@ -15,7 +15,7 @@ public class Character : MonoBehaviour, IDamageable
     public string characterName { get => _characterName; }
     public Sprite portrait { get => _portrait; }
     public CharacterFraction fraction { get => _fraction; }
-    public CharacterHealth characterHealth { get => _health; }
+    public CharacterHealth health { get => _health; }
 
     [Header("Combat parameters")]
     [SerializeField] private float _moveSpeed;
@@ -34,12 +34,6 @@ public class Character : MonoBehaviour, IDamageable
     [Header("UI Elements"), Space(5)]
     [SerializeField] private string _characterName;
     [SerializeField] private Sprite _portrait;
-
-    [Header("Fireball test"), Space(5)]
-    [SerializeField] private int _range;
-    [SerializeField] private int _distance;
-    [SerializeField] private int _damage;
-    private Fireball _fireball;
    
 
     private TacticalGrid _grid;
@@ -47,6 +41,7 @@ public class Character : MonoBehaviour, IDamageable
     private GridObject _gridObject;
     private CharacterUI _characterUI;
 
+    private PlayerInput _input;
     private int _movePoints;
     private Coroutine _actionRoutine;
     private bool _isDoingAction;
@@ -61,7 +56,6 @@ public class Character : MonoBehaviour, IDamageable
         characterStats = new CharacterStats(_strenght, _endurance, _startMovePoints, _initiative);
         _health = new CharacterHealth(characterStats);
         _attack = new Attack(characterStats);
-        _fireball = new Fireball(_grid, _range, _distance, _damage, this);
     }
 
     private void Start()
@@ -74,37 +68,45 @@ public class Character : MonoBehaviour, IDamageable
     }
 
     [Inject]
-    private void Dependencies(TacticalGrid grid, CombatController controller)
+    private void Dependencies(TacticalGrid grid, CombatController controller, PlayerInput input)
     {
         _grid = grid;
         _combatController = controller;
+        _input = input;
     }
 
-    public IEnumerator StartTurn(CharacterUI ui)
+    public IEnumerator StartTurn(CharacterUI UI)
     {
-        _movePoints = _startMovePoints;
-        _actionPoints = _startActionPoints;
-        _characterUI = ui;
-        _characterUI.SetUI(_health.maxHealth, _energy, _movePoints, _actionPoints);
-        _grid.FindReachableNodes(transform.position, _movePoints, fraction);
+        _characterUI = UI;
+        Initialize(_characterUI);
+        _grid.FindReachableNodes(transform.position, _movePoints);
+        _grid.FindTargetNodes(transform.position, _attackRange, fraction);
         _selected = true;
         while (_selected)
         {
             yield return null;
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            // Movement(mousePos);
-            // ChooseTarget(mousePos);
-            // AttackTarget();
-            _fireball.Target(mousePos);
+            Movement(mousePos);
+            ChooseTarget(mousePos);
+            AttackTarget();
         }
     }
 
+    private void Initialize(CharacterUI UI)
+    {
+        _movePoints = _startMovePoints;
+        _actionPoints = _startActionPoints;
+        _characterUI = UI;
+        _characterUI.SetUI(_health.maxHealth, _health.currentHealth, _energy, _movePoints, _actionPoints);
+    }
+
+    #region Actions
     private void Movement(Vector2 mousePos)
     {
         if (!_isDoingAction && _movePoints > 0)
         {
             _grid.DrawPath(transform.position, mousePos);
-            if (Input.GetMouseButtonDown(0))
+            if (_input.Combat.Select.ReadValue<float>() > 0.5f)
             {
                 _path = _grid.GetPath(mousePos);
                 if (_path != null)
@@ -119,6 +121,30 @@ public class Character : MonoBehaviour, IDamageable
             _grid.Clear(transform.position);
             _grid.FindTargetNodes(transform.position, _attackRange, fraction);
         }
+    }
+
+    private IEnumerator MoveRoutine()
+    {
+        _isDoingAction = true;
+        Vector2 startPos = transform.position;
+        for (int i = 0; i < _path.Count; i++)
+        {
+            _movePoints -= (int) _path[i].movePenalty;
+            while (Vector2.Distance(transform.position, _path[i].position) > 0.01f)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _path[i].position, _moveSpeed * Time.deltaTime);
+                yield return null;
+            }
+            transform.position = _path[i].position;
+            _characterUI.ChangeMovement(_movePoints);
+        }
+        _isDoingAction = false;
+        transform.position = _grid.GetGridPosition(transform.position);
+        Vector2 endPos = transform.position;
+        _grid.SetGridObject(startPos, endPos, _gridObject);
+        _grid.FindReachableNodes(transform.position, _movePoints);
+        _grid.FindTargetNodes(transform.position, _attackRange, fraction);
+        _path.Clear();
     }
 
     private void ChooseTarget(Vector3 mousePos)
@@ -144,8 +170,9 @@ public class Character : MonoBehaviour, IDamageable
     {
         if (_selectedObj == null || _actionPoints == 0) return;
         if (_grid.CalculateDistanceToTarget(transform.position, _selectedObj.transform.position) <= _attackRange
-        && Input.GetMouseButtonDown(0) && !_isDoingAction)
+        && _input.Combat.Select.triggered && !_isDoingAction)
         {
+            _isDoingAction = true;
             Character ch = _selectedObj.GetComponent<Character>();
             Debug.Log(ch);
             _attack.AttackTarget(ch);
@@ -155,45 +182,21 @@ public class Character : MonoBehaviour, IDamageable
         }
     }
 
-    public void EndTurn()
-    {
-        _selected = false;
-        _fireball.UnCast();
-    }
-
     private IEnumerator AttackRoutine()
     {
-        _isDoingAction = true;
         yield return null;
         _isDoingAction = false;
     }
-
-    private IEnumerator MoveRoutine()
+    #endregion
+    
+    public void EndTurn()
     {
-        _isDoingAction = true;
-        Vector2 startPos = transform.position;
-        for (int i = 0; i < _path.Count; i++)
-        {
-            _movePoints -= (int)(3 * _path[i].movePenalty);
-            while (Vector2.Distance(transform.position, _path[i].position) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, _path[i].position, _moveSpeed * Time.deltaTime);
-                yield return null;
-            }
-            transform.position = _path[i].position;
-            _characterUI.ChangeMovement(_movePoints);
-        }
-        _isDoingAction = false;
-        transform.position = _grid.GetGridPosition(transform.position);
-        Vector2 endPos = transform.position;
-        _grid.SetGridObject(startPos, endPos, _gridObject);
-        _grid.FindReachableNodes(transform.position, _movePoints, fraction);
-        _path.Clear();
+        _selected = false;
+        _grid.Clear(transform.position);
     }
 
     public void TakeDamage(int damage)
     {
         _health.SubstructHealth(damage);
     }
-
 }

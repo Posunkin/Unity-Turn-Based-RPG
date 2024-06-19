@@ -212,6 +212,7 @@ public class Pathfinding
 
     public List<PathNode> FindReachableNodes(Vector2 startPos, int movePoints)
     {
+        movePoints *= 3;
         if (!_pathNodes.ContainsKey(startPos))
         {
             Debug.LogError("Start position is wrong!");

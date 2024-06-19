@@ -1,0 +1,34 @@
+{
+    "name": "PlayerInput",
+    "maps": [
+        {
+            "name": "Combat",
+            "id": "7e8966ee-3c1b-4d07-a2f7-5a8acaa3e431",
+            "actions": [
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "71d6b6bd-ffdb-47d1-aec2-3e70c907c59c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "58c57b14-c3f8-4b69-89a6-72a225dce6e0",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
